@@ -65,8 +65,9 @@ and a particular website framework are optional. A PDF alone does not satisfy th
 report requirement. The user prefers GitHub hosting and iterative website refinement;
 this project will support those preferences while retaining an offline report.
 
-## Student review
+## Author contribution and validation
 
-- [ ] Chenglong Zhang has reviewed and understood the implementation, modelling assumptions, evidence, and AI-use statement before course submission.
+- [x] I directed the report structure and detailed presentation, reviewed successive versions, and identified the B–C map correction.
+- [x] I disclosed AI implementation, figure production and automated verification in the report’s AI-use statement.
 
-The technical checklist records the prepared project deliverables; it does not claim that the student has performed this review or submitted the archive.
+The statement distinguishes my design and review from AI production and automated checks.

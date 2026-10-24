@@ -117,5 +117,6 @@ The author is Chenglong Zhang, student ID 50068179. All development stays within
 this project directory. The source PDF is retained locally as the assignment brief.
 The complete first version includes a static report, an optional PDF export, saved
 main and pilot evidence, verification tools, and a submission packager. Publication
-uses the personal clzJY/iota-qlearning repository. Student understanding and review
-remain the next collaborative step; automated checks do not replace that review.
+uses the personal clzJY/iota-qlearning repository. My review has covered the room map, narrative clarity, figures and navigation.
+The report describes my direction and review separately from AI implementation
+and automated verification.

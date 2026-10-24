@@ -12,9 +12,10 @@ experiments, controlled comparisons, and an exploration ablation.
 - PDF: `report/Qlearning_Report_Chenglong_Zhang_50068179.pdf`
 
 The current report and evidence use the corrected B–C doorway. The original C → F
-route has two moves and value 0.9; A → C has three moves and value 0.81. Student
-review and understanding remain necessary before submission; the AI-use statement
-explicitly records that distinction. The repository belongs to the personal `clzJY`
+route has two moves and value 0.9; A → C has three moves and value 0.81. I directed
+the report structure and detailed presentation, reviewed successive versions, and
+identified the B–C correction. The AI-use statement explains my contributions,
+the AI implementation work, and how the outputs were checked. The repository belongs to the personal `clzJY`
 account. No organization repository or existing personal website source is used.
 
 ## The main file and editable source
@@ -207,11 +208,15 @@ docs/           Requirements, data dictionary, learning guide, and QA records
 Start with `docs/learning-guide.md` for a guided explanation, and
 `docs/data-dictionary.md` to connect files to the report. `docs/requirements.md`
 tracks the assignment deliverables. Graph connectivity is an explicit interpretation
-of Figure 1; we abstract rooms rather than impose an undocumented rectangular grid.
+of Figure 1; I abstract rooms rather than impose an undocumented rectangular grid.
 
 ## Attribution and AI use
 
+I set the report structure, specified the website and figure presentation, and
+reviewed successive versions, including correcting the B–C doorway. I used OpenAI
+Codex for code implementation, experiment execution, figures, HTML/CSS/JavaScript,
+reproduction tools, and explanation drafts. The built-in image-generation tool
+produced the robot and dock artwork. The report’s first-person AI-use statement
+records my direction and review alongside AI production and automated validation.
 The report cites Sutton and Barto, Watkins and Dayan, the course assignment, and
-GitHub's hosting documentation. The implementation and diagrams were written for
-this project, with OpenAI Codex assistance. Full scope and verification are disclosed
-in the report. No AI-generated numerical result is presented as experiment output.
+GitHub's hosting documentation. Experimental numbers come from saved Python runs.
