@@ -1,0 +1,108 @@
+{
+  "experiment": {
+    "id": "modified",
+    "title": "Modified",
+    "start": "A",
+    "goal": "C",
+    "role": "required A-to-C configuration"
+  },
+  "settings": {
+    "episodes": 20000,
+    "max_steps": 100,
+    "alpha": 0.1,
+    "gamma": 0.9,
+    "epsilon": 0.5,
+    "goal_reward": 1.0,
+    "step_reward": 0.0,
+    "error_threshold": 0.001,
+    "stability_window": 100
+  },
+  "seed": 14,
+  "config_sha256": "b8b95556fc6452fc1b2c91b7c9c0f68d1dc5f0e4de0a5a54475bda46d7c3c7f9",
+  "learner_sha256": "bfad7e94d24d7f833e3fb002be5dc73fbf236a4e0b36545ff16a03f73f1c5f68",
+  "runner_sha256": "e1fe934b71d5f033e12f9f6a358575650146f7b7d2a540ab1f9bccbf2eb97dc6",
+  "python": "3.13.12",
+  "numpy": "2.5.3",
+  "rng": "numpy.default_rng / PCG64",
+  "evaluation_ties": "alphabetically first exact maximum",
+  "summary": {
+    "experiment": "modified",
+    "start": "A",
+    "goal": "C",
+    "seed": 14,
+    "epsilon": 0.5,
+    "final_error": 1.7763568394002505e-15,
+    "final_residual": 5.551115123125783e-16,
+    "min_visits": 2347,
+    "unvisited_pairs": 0,
+    "total_steps": 108054,
+    "truncated_episodes": 0,
+    "greedy_steps": 3,
+    "greedy_success": true,
+    "optimal_steps": 3,
+    "greedy_path": "A \u2192 E \u2192 D \u2192 C",
+    "error_threshold_episode": 576,
+    "delta_threshold_episode": 377
+  },
+  "all_start_evaluation": {
+    "A": {
+      "path": [
+        "A",
+        "E",
+        "D",
+        "C"
+      ],
+      "success": true,
+      "steps": 3,
+      "optimal_steps": 3
+    },
+    "B": {
+      "path": [
+        "B",
+        "D",
+        "C"
+      ],
+      "success": true,
+      "steps": 2,
+      "optimal_steps": 2
+    },
+    "C": {
+      "path": [
+        "C"
+      ],
+      "success": true,
+      "steps": 0,
+      "optimal_steps": 0
+    },
+    "D": {
+      "path": [
+        "D",
+        "C"
+      ],
+      "success": true,
+      "steps": 1,
+      "optimal_steps": 1
+    },
+    "E": {
+      "path": [
+        "E",
+        "D",
+        "C"
+      ],
+      "success": true,
+      "steps": 2,
+      "optimal_steps": 2
+    },
+    "F": {
+      "path": [
+        "F",
+        "B",
+        "D",
+        "C"
+      ],
+      "success": true,
+      "steps": 3,
+      "optimal_steps": 3
+    }
+  }
+}

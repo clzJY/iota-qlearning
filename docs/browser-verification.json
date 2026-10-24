@@ -1,0 +1,28 @@
+{
+  "browser": "Firefox",
+  "version": "157.0.1",
+  "figures_loaded": true,
+  "four_required_static_qtables": true,
+  "update_calculator_checked": true,
+  "saved_snapshot_control_checked": true,
+  "viewports": [
+    {
+      "width": 390,
+      "actual_inner_width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 768,
+      "actual_inner_width": 768,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 1440,
+      "actual_inner_width": 1440,
+      "horizontal_overflow": false
+    }
+  ],
+  "direct_file_opening_checked": true,
+  "direct_file_opening_method": "byte-identical temporary copy, compatible with Firefox Snap confinement",
+  "pdf_exported": true
+}

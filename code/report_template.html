@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="A reproducible six-room Q-learning study: two required configurations, controlled comparisons, and a diagnosis of false convergence.">
+  <meta name="theme-color" content="#f5f3ed">
+  <title>Q-learning, room by room · Chenglong Zhang</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="assets/app.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to report</a>
+<header class="masthead wrap">
+  <a class="wordmark" href="#"><span class="brand-symbol" aria-hidden="true">Q</span> ROOM BY ROOM <span class="edition">/ 01</span></a>
+  <nav aria-label="Report sections"><a href="#method">Method</a><a href="#results">Results</a><a href="#insight">Beyond the route</a><a href="#reproduce">Reproduce <span aria-hidden="true">↗</span></a></nav>
+</header>
+<main id="main">
+<section class="hero wrap" aria-labelledby="title">
+  <div class="hero-copy">
+    <p class="eyebrow"><span class="live-dot" aria-hidden="true"></span> IOTA 5201 · REINFORCEMENT LEARNING</p>
+    <h1 id="title">Q-learning,<br><em>room by room.</em></h1>
+    <p class="standfirst">Finding a good route is one question.<br>Knowing whether the values are right is another.</p>
+    <p class="intro">A reproducible study of six rooms, two destinations, and the difference between a successful policy and a well-learned Q-table.</p>
+    <div class="hero-actions"><a class="button" href="#results">Explore the evidence <span aria-hidden="true">↓</span></a><a class="text-link" href="https://github.com/clzJY/iota-qlearning">View source ↗</a></div>
+    <p class="byline"><strong>Chenglong Zhang</strong> <span>50068179 · 24 October 2026</span></p>
+  </div>
+  <figure class="hero-figure">
+    <div class="figure-top"><span>THE SIX-ROOM WORLD</span><span>01 / ENVIRONMENT</span></div>
+    {{HERO_GRAPH}}
+    <figcaption><span class="legend"><i class="teal"></i> Original C → F</span><span class="legend"><i class="orange"></i> Modified A → C</span><br>A connectivity model redrawn from the assignment. Lines represent doorways, not physical distances.</figcaption>
+  </figure>
+</section>
+<div class="stat-strip wrap" aria-label="Study size"><div><strong>06</strong><span>rooms in the world</span></div><div><strong>02 + 04</strong><span>required + extension cases</span></div><div><strong>120</strong><span>seeded experiment runs</span></div><div><strong>20,000</strong><span>episodes per main run</span></div></div>
+
+<section class="section wrap" id="question">
+  <div class="section-heading"><p class="section-number">01 / THE QUESTION</p><h2>What does it mean<br>to have learned the world?</h2></div>
+  <div class="prose"><p>Imagine a robot moving between rooms to reach its dock. It receives no map of future returns. Instead, it tries an action, observes a reward, and revises an estimate of how useful that action will be. This is the setting for tabular Q-learning.</p>
+  <p>The assignment asks us to compare an original start/target pair with a new one, <strong>A → C</strong>. I interpret the robot and dock in its figure as <strong>C → F</strong> for the original case. The prose does not explicitly identify that original pair, so this is a declared modelling assumption.</p>
+  <p>Our additional question is more diagnostic: <strong>can the robot learn a shortest route while leaving other action values wrong?</strong> We answer it using full-table error, coverage counts, repeated seeds, and an exploration ablation.</p></div>
+</section>
+
+<section class="section method-section" id="method"><div class="wrap">
+  <div class="section-heading"><p class="section-number">02 / THE METHOD</p><h2>One transition.<br>One revised estimate.</h2></div>
+  <div class="method-grid"><div class="prose"><p>A table entry Q(s, a) estimates the discounted return from taking action a in state s and acting optimally afterwards. Here an action names the adjacent room we enter.</p><p>We move the current estimate a fraction <strong>α</strong> towards a target: the immediate reward plus the discounted best legal next-action value. On entering the goal, there is no future action and the target is just the terminal reward.</p>
+  <p>The behaviour policy is <strong>ε-greedy</strong>: with probability ε it chooses uniformly among legal actions; otherwise it selects a maximum-Q action, breaking exact ties uniformly. The update uses a maximum even when exploration selects a different next action. This is the off-policy distinction described by Sutton and Barto [1].</p></div>
+  <div class="equation-panel"><p class="eyebrow">THE UPDATE</p><div class="equation">Q(s, a) ← Q(s, a)<br>+ <span class="eq-alpha">α</span> [<span class="eq-target">y</span> − Q(s, a)]</div><p><span class="eq-target">y</span> = r + γ max<sub>b ∈ A(s′)</sub> Q(s′, b)<br><span class="eq-target">y</span> = r <span class="muted">when s′ is terminal</span></p><div class="equation-note"><strong>α</strong> controls the size of each revision.<br><strong>γ</strong> makes earlier rewards more valuable.</div></div></div>
+  <div class="calculator interactive" aria-labelledby="calculator-title"><div><p class="eyebrow">ILLUSTRATIVE DEMONSTRATION · NOT A TRAINING RUN</p><h3 id="calculator-title">Try one update</h3><p>A nonterminal transition with Q = 0.2, max Q′ = 0.6, α = 0.1, γ = 0.9, and r = 0 gives <strong>Q<sub>new</sub> = 0.234</strong>. Reaching the goal instead gives 0.280 with r = 1.</p></div>
+  <form id="update-form"><div class="control-grid"><label>Current Q <output for="old-q" id="old-q-label">0.20</output><input type="range" id="old-q" min="0" max="1" step="0.01" value="0.2"></label><label>Best next Q <output for="next-q" id="next-q-label">0.60</output><input type="range" id="next-q" min="0" max="1" step="0.01" value="0.6"></label><label>Learning rate α <output for="alpha" id="alpha-label">0.10</output><input type="range" id="alpha" min="0.01" max="1" step="0.01" value="0.1"></label><label>Discount γ <output for="gamma" id="gamma-label">0.90</output><input type="range" id="gamma" min="0" max="0.99" step="0.01" value="0.9"></label></div><label class="select-label">Transition <select id="transition"><option value="move">Ordinary move · r = 0</option><option value="terminal">Enter target · r = 1</option></select></label><div class="calc-result" aria-live="polite"><span id="calc-detail">0.200 + 0.10 × (0.540 − 0.200)</span><output id="calc-value">0.234</output></div></form></div>
+</div></section>
+
+<section class="section wrap" id="setup">
+  <div class="section-heading"><p class="section-number">03 / THE EXPERIMENT</p><h2>A small world.<br>An explicit specification.</h2></div>
+  <div class="two-col"><div><h3>States and transitions</h3><p>Each of A–F is a state. Doorways define deterministic, bidirectional edges. Unavailable moves are masked, never penalized as though they were valid actions. The terminal row has no outgoing actions.</p>{{ADJACENCY_TABLE}}<p class="small">This abstracts the room diagram into connectivity; it does not claim the rooms are equal-sized cells.</p></div><div><h3>Rewards and stopping</h3><p>Entering the target yields <strong>+1</strong>; every other move yields <strong>0</strong>. Episodes start at the declared fixed room and end at the target. A 100-step cap prevents unbounded sampling; a time-limit truncation still bootstraps because it is not a terminal goal.</p><p>With γ = 0.9 and zero intermediate rewards, maximizing discounted return favours the shortest route. We reset Q to zero for every configuration and seed; the modified case is trained from scratch.</p>{{SETTINGS_TABLE}}</div></div>
+  <div class="note"><strong>Why this budget?</strong> A retained pilot used ε = 0.2 and 3,000 episodes. All 20 runs in each required case found a shortest route, but worst full-table errors were {{PILOT_ERRORS}}. We increased ε to 0.5 and the budget to 20,000 episodes to improve coverage. Both settings changed, so the pilot is a motivation and coverage warning, not an isolated estimate of either setting’s effect. Its complete outputs are retained in <code>experiments/pilot_3000/</code>.</div>
+  <h3 class="spaced">Six cases, one shared protocol</h3>{{DESIGN_TABLE}}
+  <p class="small">Seeds 0–19 are separate runs. The same seed list is used across configurations, but trajectories consume different numbers of random draws: matching seed labels does not make transitions identical. Seed 0 is the preselected illustrative run throughout. All 120 main runs use 20,000 episodes and the same α, γ, rewards, and cap. Only the ablation changes ε.</p>
+</section>
+
+<section class="section results-section" id="results"><div class="wrap">
+  <div class="section-heading"><p class="section-number">04 / REQUIRED RESULTS</p><h2>The route is short.<br>The evidence goes further.</h2></div>
+  <div class="metric-definitions"><div><span class="mini-label">VALUE ACCURACY</span><h3>Full-table error</h3><p>E<sub>e</sub> = max<sub>(s,a) valid</sub> |Q<sub>e</sub>(s,a) − Q*(s,a)|, measured after episode e. It includes actions away from the learned route.</p></div><div><span class="mini-label">OBSERVED STABILITY</span><h3>Episode change</h3><p>Δ<sub>e</sub> = max<sub>(s,a) valid</sub> |Q<sub>e</sub>(s,a) − Q<sub>e−1</sub>(s,a)|. Small changes can reflect either accurate values or infrequent updates.</p></div><div><span class="mini-label">A CHECKABLE REFERENCE</span><h3>Exact Q*</h3><p>Q*(s,a) = 0.9<sup>d(a,g)</sup>, where d is the shortest distance from the destination of action a to goal g. Goal entry has d = 0, so Q* = 1.</p></div></div>
+  <p class="prose wide">For this deterministic model, a breadth-first search supplies the exact reference independently of training. A separate value-iteration check agrees for every goal. The learner never uses this oracle for action selection or updates. We call a run <strong>empirically accurate at tolerance 10<sup>−3</sup></strong> when E remains below that threshold for at least 100 episodes through the end of the run. This criterion is retrospective; we still use the full fixed budget.</p>
+  {{REQUIRED_RESULTS}}
+  <div class="note"><strong>How to read the plots.</strong> Left: median error across 20 seeds, with a shaded 10th–90th percentile band and the 10<sup>−3</sup> tolerance. The logarithmic error axis is floored at 10<sup>−12</sup> only for display; exact values remain in the CSV. Right: the maximum Q-value at the configured start, with the same across-seed band and a dashed exact reference. Episode 0 is initialization. Bands describe seed variation, not confidence intervals. Tables show seed 0 to six decimals; the local CSVs retain numerical precision.</div>
+  <h3 class="spaced">A policy can tie without being wrong</h3><p>For target F, D → B → F and D → E → F are equally short. We break evaluation ties alphabetically when values are exactly equal; small numerical differences may choose a different route. During training, ties are random. The criterion is success and shortest-path length, not a single prescribed sequence.</p>
+  <div class="snapshot-panel interactive"><div><p class="eyebrow">SAVED EXPERIMENTAL SNAPSHOTS · SEED 0</p><h3>Watch the table acquire structure</h3><p>Inspect recorded checkpoints from the two required runs. These are saved values, not a new simulation. The complete initial and final tables above remain visible without this control.</p></div><div><div class="snapshot-controls"><label>Configuration <select id="snapshot-case"><option value="original">C → F</option><option value="modified">A → C</option></select></label><label>Recorded episode <select id="snapshot-episode"></select></label></div><div id="snapshot-table" aria-live="polite"><p>Enable JavaScript to inspect intermediate checkpoints.</p></div></div></div>
+</div></section>
+
+<section class="section wrap" id="comparison">
+  <div class="section-heading"><p class="section-number">05 / CONTROLLED COMPARISONS</p><h2>Change the start.<br>Then change the goal.</h2></div>
+  <div class="prose wide"><p>The required comparison changes two variables together. To separate them, we add A → F, B → F, and B → C. Together with A → C, these form a 2 × 2 design: starts A/B and targets F/C. Using B avoids the degenerate C → C episode, which would terminate before taking any action.</p><p>With a fixed goal, the optimal Q-table depends on transitions, rewards, and discounting; it does not depend on which start we train from. Start choice still affects which actions receive updates and how quickly the full table becomes accurate. Changing the goal changes terminal boundaries and the values themselves.</p></div>
+  {{COMPARISON_TABLE}}
+  <figure class="chart"><img src="assets/figures/controls.svg" alt="Controlled comparisons of accuracy-threshold episodes across starts and targets; accompanying table gives numerical summaries."><figcaption>Figure 3. Each dot is one seed’s first episode in a below-10<sup>−3</sup> error suffix that persists to the end for at least 100 episodes. Thick marks show medians. Cases share hyperparameters and episode budgets. This diagnoses sample coverage, not general task difficulty.</figcaption></figure>
+  <div class="analysis-grid">{{CONTROL_ANALYSIS}}</div>
+  <p class="small">Episode budgets are matched, but exploratory trajectories have different lengths. The table also reports median transition counts so that a comparison in episodes is not mistaken for equal computational or interaction cost. Seed-level results are available in <a href="data/summary.csv">summary.csv</a>. This is a small descriptive study, with no significance claim or claim that 20 seeds characterize every possible random trajectory.</p>
+</section>
+
+<section class="section insight-section" id="insight"><div class="wrap">
+  <div class="section-heading"><p class="section-number">06 / OUR EXTENSION</p><h2>A quiet table<br>can still be wrong.</h2></div>
+  <div class="two-col"><div class="prose"><p>We repeat C → F with <strong>ε = 0</strong>. Greedy ties are still broken randomly, so this does not mean the run has no initial randomness. Once a route has positive estimates, however, lower-valued alternatives may receive no further attention.</p>{{ABLATION_ANALYSIS}}<p>This is why success rate alone is insufficient evidence that the entire Q-table has converged. The robot can execute one good route while being poorly informed about actions it rarely takes.</p></div><div class="insight-stat"><p class="eyebrow">NO FORCED EXPLORATION · 20 SEEDS</p>{{ABLATION_STAT}}<p>shortest-route success<br><span>versus incomplete value learning</span></p></div></div>
+  <figure class="chart"><img src="assets/figures/ablation.svg" alt="No-exploration runs stabilize in episode changes while retaining large full-table error; numerical summaries appear in the surrounding text."><figcaption>Figure 4. C → F with ε = 0.5 versus ε = 0, with other settings held fixed. Both panels use median and 10th–90th percentile bands across 20 seeds; left is error against Q*, right is the change in the Q-table during each episode. Values below 10<sup>−12</sup> are floored for the logarithmic display.</figcaption></figure>
+  <h3 class="spaced">Stabilization is an observation, not a theorem</h3><div class="two-col"><p>We also save the Bellman residual, max |T*Q − Q|, and every state-action visit count. The residual checks consistency with the known model; the counts reveal coverage. In the main required runs, {{RESIDUAL_SUMMARY}}. These checks strengthen a finite-run accuracy claim.</p><p>The classical convergence result requires repeated sampling and suitable decreasing step sizes [2]. Our constant α = 0.1 and finite budget do not establish those asymptotic conditions. Deterministic transitions make a precise reference possible here; noisy rewards, larger state spaces, alternative graph interpretations, and other hyperparameters could change the picture.</p></div>
+</div></section>
+
+<section class="section wrap" id="takeaways">
+  <div class="section-heading"><p class="section-number">07 / TAKEAWAYS</p><h2>Three lessons<br>to carry forward.</h2></div>
+  <div class="takeaway-grid"><article><span>01</span><h3>The goal defines value.</h3><p>Moving the target changes rewards and the terminal boundary. A new goal generally requires a new value function.</p></article><article><span>02</span><h3>The start shapes experience.</h3><p>Under the same goal, different starts share Q* but expose the learner to different trajectories and coverage bottlenecks.</p></article><article><span>03</span><h3>Check more than success.</h3><p>A good route, a stable table, and an accurate table answer different questions. Compare all three before claiming convergence.</p></article></div>
+</section>
+
+<section class="section reproduce-section" id="reproduce"><div class="wrap">
+  <div class="section-heading"><p class="section-number">08 / REPRODUCE &amp; VERIFY</p><h2>Every figure<br>has a trail.</h2></div>
+  <div class="two-col"><div><p>The project includes the learner, explicit configurations, all 120 main-run traces, pilot evidence, seed-level metadata, Q-tables, reference values, visit counts, and plotting source. Essential text, tables, and figures are local and require no training run or external service to read.</p><p><a class="text-link" href="https://github.com/clzJY/iota-qlearning">Personal repository · clzJY/iota-qlearning ↗</a><br><a href="https://github.com/clzJY/iota-qlearning/releases/latest">Download submission ZIP ↗</a> · <a href="Qlearning_Report_Chenglong_Zhang_50068179.pdf">Read the PDF</a><br><a href="data/experiments.json">Experiment configuration</a> · <a href="data/summary.csv">All-run summary</a></p><p class="small">The online release links require a connection. The submitted ZIP contains the complete offline report and the files needed to reproduce the evidence.</p></div><div><pre><code>python -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m unittest discover -s code -p 'test_*.py'
+python code/run_experiments.py
+python scripts/build_report.py
+python scripts/verify_project.py --replay
+python scripts/package_submission.py</code></pre><p class="small">Exact main commands; see the README for individual configurations, clean output directories, package versions, optional PDF generation, and local serving.</p></div></div>
+  <details><summary>Data dictionary and verification details</summary><div class="detail-content"><p><code>results/&lt;case&gt;/seed_XX/</code> contains <code>initial_q.csv</code>, <code>final_q.csv</code>, <code>visits.csv</code>, <code>snapshots.csv</code>, <code>trace.csv.gz</code>, and <code>metadata.json</code>. Empty Q-table CSV cells mean unavailable actions or the terminal row, never a numeric zero. Trace fields are defined in <code>docs/data-dictionary.md</code>.</p><p>The checker validates saved-table legality and bounds, seed metadata and code/config hashes, final error/residual calculations, greedy path lengths, trace lengths, initial values, and local HTML references. With <code>--replay</code>, it reruns seed 0 in each required configuration and compares its complete trace and final table to the submitted evidence.</p><p>Reference tables are generated with graph distances and checked against independently implemented value iteration. Diagnostic calculations do not update training values. The report generator reads saved results; it never fabricates or retrains them.</p></div></details>
+  <h3 class="spaced">References and attribution</h3><ol class="references"><li id="ref1">Sutton, R. S. &amp; Barto, A. G. <em>Reinforcement Learning: An Introduction</em>, 2nd ed., Chapter 6.5, Q-learning. <a href="https://incompleteideas.net/book/the-book-2nd.html">Author’s book page ↗</a></li><li id="ref2">Watkins, C. J. C. H. &amp; Dayan, P. (1992). Q-learning. <em>Machine Learning</em> 8, 279–292. <a href="https://www.gatsby.ucl.ac.uk/~dayan/papers/wd92.html">Author’s paper page ↗</a></li><li>Yu, J. (Fall 2026). <em>Mid-Term Assignment: Implementing Q-Learning</em>, IOTA 5201. Course-provided assignment brief. The room connections and original C → F interpretation are derived from its Figure 1. Our diagrams are newly drawn; the robot photographs are not reused.</li><li>GitHub Docs. <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site">Configuring a publishing source for GitHub Pages ↗</a>. Hosting workflow only.</li></ol>
+  <div class="ai-statement"><h3>AI assistance and responsibility</h3><p>OpenAI Codex helped interpret the brief, draft the Python implementation and checks, run experiments, build figures and the HTML report, and prepare reproducibility tools. Verification performed during development included numerical unit checks, an independent value-iteration comparison, saved-artifact checks, seed replay, and browser checks. All numerical claims above are generated from saved Python runs, not illustrative AI output.</p><p>This first version was produced with AI assistance. These checks do not establish the student’s understanding. Chenglong Zhang remains responsible for reviewing the model, code, evidence, explanations, and AI-use statement before submission.</p></div>
+</div></section>
+</main>
+<footer class="wrap"><a class="wordmark" href="#">Q / ROOM BY ROOM</a><p>Chenglong Zhang · 50068179<br>IOTA 5201 · Fall 2026</p><a href="#title">Back to top ↑</a></footer>
+<script id="experiment-data" type="application/json">{{SNAPSHOT_JSON}}</script>
+</body></html>

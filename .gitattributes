@@ -1,0 +1,15 @@
+# Preserve CSV evidence exactly, including the CSV writer's CRLF record endings.
+*.csv -text whitespace=cr-at-eol
+*.gz binary
+*.pdf binary
+*.png binary
+*.py text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.cjs text eol=lf
+*.svg text eol=lf
+*.yml text eol=lf
+*.txt text eol=lf
