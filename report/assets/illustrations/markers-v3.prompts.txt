@@ -1,5 +1,5 @@
 Tool: built-in image_gen, reference-based extraction, transparent backgrounds preserved.
-Reference: robot-navigation-v2.png (previous generated conceptual illustration).
+Reference: an earlier AI-generated conceptual illustration, used to extract these two sprites. The resulting sprites are the report assets.
 The floorplan geometry and animated paths are code-defined and checked separately.
 
 Robot -> report/assets/illustrations/robot-marker-v3.png

@@ -32,10 +32,11 @@ def free_port():
         return sock.getsockname()[1]
 
 
-def main(export_pdf=False):
+def main(export_pdf=False, preview_directory=None):
     if not shutil.which("geckodriver") or not shutil.which("firefox"):
         raise SystemExit("Optional browser check requires installed firefox and geckodriver")
-    preview = ROOT / "docs/preview"
+    preview_temp = tempfile.TemporaryDirectory(prefix="iota-preview-") if preview_directory is None else None
+    preview = Path(preview_temp.name) if preview_temp else preview_directory
     preview.mkdir(parents=True, exist_ok=True)
     server = ThreadingHTTPServer(("127.0.0.1", 0), partial(QuietHandler, directory=str(ROOT / "report")))
     threading.Thread(target=server.serve_forever, daemon=True).start()
@@ -202,9 +203,13 @@ def main(export_pdf=False):
         server.shutdown()
         server.server_close()
         log.close()
+        if preview_temp:
+            preview_temp.cleanup()
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--export-pdf", action="store_true")
-    main(parser.parse_args().export_pdf)
+    parser.add_argument("--preview-dir", type=Path, help="Optionally retain QA screenshots; omitted by default")
+    args = parser.parse_args()
+    main(args.export_pdf, args.preview_dir)

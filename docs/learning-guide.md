@@ -1,7 +1,7 @@
 # Understanding this Q-learning project
 
-Work through these questions in order. The report is a complete first version, but
-understanding its modelling choices and evidence is part of the assignment.
+This guide connects the report’s modelling choices and experimental evidence to
+the implementation. Work through the questions in order.
 
 ## What is a state and what is an action
 
@@ -98,11 +98,7 @@ runs, inspect the saved final tables and figures, and read the AI-use statement.
 Confirm that every conclusion describes the actual evidence and that you can explain
 the distinction between a route and the complete value function in your own words.
 
-## Why the former sliders were replaced
-
-The sliders changed hypothetical input numbers, not the saved experiments. The report now uses a fixed sequence: after B → F, Q(B,F) becomes 0.1; on a later C → B move, that future value makes Q(C,B) become 0.009. This makes the teaching point explicit: reward can influence an earlier move even when that move itself earns zero.
-
-## Read the opening animation
+## Read the route illustrations
 
 The solid robot stays in C and the dock stays in F. Teal illustrates C → B → F,
 orange C → D → B → F, and blue C → D → E → F. Faint robot echoes show possible
