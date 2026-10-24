@@ -71,7 +71,7 @@ the suffix criterion within its budget; it is censored, not zero. The threshold
 is retrospective and is not used for early stopping.
 
 Each case also includes `reference_q.csv`, the exact distance-based reference.
-There is no rounding before saving CSVs. Report tables round to six decimals;
+There is no rounding before saving CSVs. The main report tables round to three decimals (zero is shown as 0); the checkpoint viewer shows four decimals;
 figures floor logarithmic error/change values at 1e-12 only for display.
 
 ## Provenance and reproduction

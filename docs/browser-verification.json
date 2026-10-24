@@ -3,6 +3,9 @@
   "version": "157.0.1",
   "figures_loaded": true,
   "four_required_static_qtables": true,
+  "problem_first_opening_without_statistics_strip": true,
+  "required_qtables_outside_collapsible_sections": true,
+  "conceptual_opening_illustration_loaded": true,
   "update_calculator_checked": true,
   "saved_snapshot_control_checked": true,
   "viewports": [

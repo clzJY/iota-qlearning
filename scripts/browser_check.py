@@ -83,11 +83,14 @@ def main(export_pdf=False):
         ready = script("return document.readyState === 'complete' && [...document.images].every(i => i.complete && i.naturalWidth > 0)")
         assert ready, "Some local figures failed to render"
         assert script("return document.querySelectorAll('.q-tables .q-table').length") == 4
+        assert script("return [...document.querySelectorAll('.q-tables')].every(table => !table.closest('details'))"), "Required tables must remain visible without interaction"
+        assert script("return !document.querySelector('.stat-strip') && document.querySelector('h1').textContent.includes('goal')"), "Opening must describe the problem without a statistics strip"
+        assert script("return Boolean(document.querySelector('.hero-illustration img').naturalWidth)"), "Opening illustration failed to load"
         assert script("return document.getElementById('calc-value').textContent") == "0.234"
         result = script("document.getElementById('transition').value='terminal'; document.getElementById('transition').dispatchEvent(new Event('change',{bubbles:true})); return document.getElementById('calc-value').textContent")
         assert result == "0.280", result
         assert script("return document.getElementById('next-q').disabled")
-        result = script("document.getElementById('snapshot-case').value='modified'; document.getElementById('snapshot-case').dispatchEvent(new Event('change')); document.getElementById('snapshot-episode').value='20000'; document.getElementById('snapshot-episode').dispatchEvent(new Event('change')); return document.querySelector('#snapshot-table caption').textContent")
+        result = script("document.querySelector('.snapshot-details').open=true; document.getElementById('snapshot-case').value='modified'; document.getElementById('snapshot-case').dispatchEvent(new Event('change')); document.getElementById('snapshot-episode').value='20000'; document.getElementById('snapshot-episode').dispatchEvent(new Event('change')); return document.querySelector('#snapshot-table caption').textContent")
         assert "A → C" in result and "20000" in result
         assert script("return document.querySelectorAll('#snapshot-table tbody tr').length") == 6
         command("POST", "/url", {"url": local_url})
@@ -116,6 +119,11 @@ def main(export_pdf=False):
             assert offline_ok, "Direct file opening failed"
         if export_pdf:
             command("POST", "/url", {"url": local_url})
+            # Extensions and exact methodology are expandable on screen. Include
+            # their full text and figures in the printable companion report.
+            script("document.querySelectorAll('details').forEach(section=>section.open=true)")
+            loaded = command("POST", "/execute/async", {"script": "const done=arguments[arguments.length-1];Promise.all([...document.images].map(image=>image.complete?Promise.resolve(image.naturalWidth>0):new Promise(resolve=>{image.onload=()=>resolve(true);image.onerror=()=>resolve(false)}))).then(results=>done(results.every(Boolean)))", "args": []})
+            assert loaded, "A figure failed to load before PDF export"
             # Preserve useful PDF download links after the temporary QA server
             # stops. Only link destinations change; local figure sources do not.
             script("for(const a of document.querySelectorAll('a[href]')){const raw=a.getAttribute('href');if(raw && !raw.startsWith('#') && !/^[a-z][a-z0-9+.-]*:/i.test(raw)){a.href=new URL(raw,'https://clzJY.github.io/iota-qlearning/').href}}")
@@ -126,6 +134,9 @@ def main(export_pdf=False):
             print(f"Exported {pdf_path.name}", flush=True)
         record = {"browser": "Firefox", "version": session["capabilities"]["browserVersion"],
                   "figures_loaded": True, "four_required_static_qtables": True,
+                  "problem_first_opening_without_statistics_strip": True,
+                  "required_qtables_outside_collapsible_sections": True,
+                  "conceptual_opening_illustration_loaded": True,
                   "update_calculator_checked": True, "saved_snapshot_control_checked": True,
                   "viewports": viewport_checks, "direct_file_opening_checked": bool(offline_ok),
                   "direct_file_opening_method": "byte-identical temporary copy, compatible with Firefox Snap confinement",

@@ -1,4 +1,4 @@
-# Q-learning, room by room
+# How do robots find the goal?
 
 **Chenglong Zhang · 50068179 · IOTA 5201 · Fall 2026**
 
@@ -15,6 +15,24 @@ The report, code, and evidence form a complete first version for review. Student
 review and understanding remain necessary before submission; the AI-use statement
 explicitly records that distinction. The repository belongs to the personal `clzJY`
 account. No organization repository or existing personal website source is used.
+
+## The main file and editable source
+
+This is one technical HTML report, published as a website. The PDF is exported
+from the report for printing; it is a companion rather than a separate narrative.
+
+| Purpose | Main file |
+| --- | --- |
+| Read the report or open the website locally | `report/index.html` |
+| Revise the written explanation and page structure | `code/report_template.html` |
+| Revise styling | `report/assets/style.css` |
+| Insert saved results and regenerate the report/figures | `scripts/build_report.py` |
+| Understand the learning implementation | `code/qlearning.py` |
+
+Edit the template, then run `python scripts/build_report.py`. Direct edits to the
+built `report/index.html` would be replaced by the next generation. The opening
+illustration is conceptual; the precise room graph is introduced with the problem.
+The required C-to-F and A-to-C experiments come before the expandable extensions.
 
 ## Read the report
 
