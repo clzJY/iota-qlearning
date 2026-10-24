@@ -5,7 +5,7 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-INCLUDE_DIRS = ["code", "configs", "docs", "experiments", "results", "report", "scripts", ".github"]
+INCLUDE_DIRS = ["code", "configs", "docs", "experiments/pilot_3000", "results", "report", "scripts", ".github"]
 INCLUDE_FILES = ["README.md", "requirements.txt", "requirements-lock.txt", ".gitignore", ".gitattributes"]
 
 

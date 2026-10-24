@@ -1,0 +1,109 @@
+{
+  "experiment": {
+    "id": "no_exploration",
+    "title": "No forced exploration",
+    "start": "C",
+    "goal": "F",
+    "epsilon": 0.0,
+    "role": "extension: diagnose false stabilization"
+  },
+  "settings": {
+    "episodes": 20000,
+    "max_steps": 100,
+    "alpha": 0.1,
+    "gamma": 0.9,
+    "epsilon": 0.0,
+    "goal_reward": 1.0,
+    "step_reward": 0.0,
+    "error_threshold": 0.001,
+    "stability_window": 100
+  },
+  "seed": 10,
+  "config_sha256": "b8b95556fc6452fc1b2c91b7c9c0f68d1dc5f0e4de0a5a54475bda46d7c3c7f9",
+  "learner_sha256": "bfad7e94d24d7f833e3fb002be5dc73fbf236a4e0b36545ff16a03f73f1c5f68",
+  "runner_sha256": "e1fe934b71d5f033e12f9f6a358575650146f7b7d2a540ab1f9bccbf2eb97dc6",
+  "python": "3.13.12",
+  "numpy": "2.5.3",
+  "rng": "numpy.default_rng / PCG64",
+  "evaluation_ties": "alphabetically first exact maximum",
+  "summary": {
+    "experiment": "no_exploration",
+    "start": "C",
+    "goal": "F",
+    "seed": 10,
+    "epsilon": 0.0,
+    "final_error": 1.0,
+    "final_residual": 1.0,
+    "min_visits": 0,
+    "unvisited_pairs": 6,
+    "total_steps": 60002,
+    "truncated_episodes": 0,
+    "greedy_steps": 3,
+    "greedy_success": true,
+    "optimal_steps": 3,
+    "greedy_path": "C \u2192 D \u2192 E \u2192 F",
+    "error_threshold_episode": null,
+    "delta_threshold_episode": 77
+  },
+  "all_start_evaluation": {
+    "A": {
+      "path": [
+        "A",
+        "E",
+        "F"
+      ],
+      "success": true,
+      "steps": 2,
+      "optimal_steps": 2
+    },
+    "B": {
+      "path": [
+        "B",
+        "D",
+        "E",
+        "F"
+      ],
+      "success": true,
+      "steps": 3,
+      "optimal_steps": 1
+    },
+    "C": {
+      "path": [
+        "C",
+        "D",
+        "E",
+        "F"
+      ],
+      "success": true,
+      "steps": 3,
+      "optimal_steps": 3
+    },
+    "D": {
+      "path": [
+        "D",
+        "E",
+        "F"
+      ],
+      "success": true,
+      "steps": 2,
+      "optimal_steps": 2
+    },
+    "E": {
+      "path": [
+        "E",
+        "F"
+      ],
+      "success": true,
+      "steps": 1,
+      "optimal_steps": 1
+    },
+    "F": {
+      "path": [
+        "F"
+      ],
+      "success": true,
+      "steps": 0,
+      "optimal_steps": 0
+    }
+  }
+}

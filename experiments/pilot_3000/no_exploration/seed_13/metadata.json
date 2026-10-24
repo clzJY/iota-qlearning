@@ -19,7 +19,7 @@
     "stability_window": 100
   },
   "seed": 13,
-  "config_sha256": "87a77ddf697ed6ed2cc8776cadbacdb239fd9b6d18490ef7c00b0f8d4a0f38b7",
+  "config_sha256": "65f1d274310e1655cf1b98a36c69c666968201e92f2cba13e8c58383482362c7",
   "learner_sha256": "bfad7e94d24d7f833e3fb002be5dc73fbf236a4e0b36545ff16a03f73f1c5f68",
   "runner_sha256": "e1fe934b71d5f033e12f9f6a358575650146f7b7d2a540ab1f9bccbf2eb97dc6",
   "python": "3.13.12",
@@ -36,14 +36,14 @@
     "final_residual": 0.9,
     "min_visits": 0,
     "unvisited_pairs": 4,
-    "total_steps": 9008,
+    "total_steps": 6013,
     "truncated_episodes": 0,
-    "greedy_steps": 3,
+    "greedy_steps": 2,
     "greedy_success": true,
-    "optimal_steps": 3,
-    "greedy_path": "C \u2192 D \u2192 B \u2192 F",
+    "optimal_steps": 2,
+    "greedy_path": "C \u2192 B \u2192 F",
     "error_threshold_episode": null,
-    "delta_threshold_episode": 78
+    "delta_threshold_episode": 63
   },
   "all_start_evaluation": {
     "A": {
@@ -68,13 +68,12 @@
     "C": {
       "path": [
         "C",
-        "D",
         "B",
         "F"
       ],
       "success": true,
-      "steps": 3,
-      "optimal_steps": 3
+      "steps": 2,
+      "optimal_steps": 2
     },
     "D": {
       "path": [

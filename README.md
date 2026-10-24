@@ -11,7 +11,8 @@ experiments, controlled comparisons, and an exploration ablation.
 - Offline report: `report/index.html`
 - PDF: `report/Qlearning_Report_Chenglong_Zhang_50068179.pdf`
 
-The report, code, and evidence form a complete first version for review. Student
+The current report and evidence use the corrected B–C doorway. The original C → F
+route has two moves and value 0.9; A → C has three moves and value 0.81. Student
 review and understanding remain necessary before submission; the AI-use statement
 explicitly records that distinction. The repository belongs to the personal `clzJY`
 account. No organization repository or existing personal website source is used.
@@ -31,7 +32,8 @@ from the report for printing; it is a companion rather than a separate narrative
 
 Edit the template, then run `python scripts/build_report.py`. Direct edits to the
 built `report/index.html` would be replaced by the next generation. The opening
-illustration is conceptual; the precise room graph is introduced with the problem.
+floorplan uses the same corrected graph as the experiments, with fixed robot/dock
+markers and three illustrative legal route traces. Traces are not recorded runs.
 The required C-to-F and A-to-C experiments come before the expandable extensions.
 
 ## Read the report
@@ -68,8 +70,22 @@ graph and every setting are in `configs/experiments.json`.
 
 All 100 main runs with ε = 0.5 reached full-table error below 0.001 for a suffix
 of at least 100 episodes through run end, and found shortest greedy routes. The
-20 no-forced-exploration runs also found shortest routes, but retained full-table
-errors of 0.9–1.0. The report analyses why these are different outcomes.
+20 no-forced-exploration runs retained full-table errors of 0.9–1.0; 14 found a
+shortest route and six kept a longer one. The report analyses why these are different outcomes.
+
+## Map correction and preserved history
+
+The B–C connection is available in both directions: C has actions B/D; B has
+C/D/F when it is nonterminal. Both diagrams, every current main/pilot experiment,
+and all derived values use these seven doorway pairs:
+A–E, B–C, B–D, B–F, C–D, D–E, E–F.
+
+Releases v1.0.0 and v1.1.0 used an incomplete graph. Their exact main/pilot evidence
+and verification records are retained in `experiments/superseded_missing_bc_20261024/`
+with a relocation notice; their results are not used in the current report. That
+historical directory remains in the repository and is excluded from the current
+submission ZIP. The ZIP contains the corrected main results and corrected pilot.
+See `docs/revisions/20261024_bc_doorway.md` for the correction record.
 
 ## Reproduce from a clean environment
 
@@ -112,7 +128,8 @@ configurations and requires exact equality of every saved trace field and Q-valu
 
 `experiments/pilot_3000/` retains all 120 preliminary runs using ε = 0.2 and 3,000
 episodes. Its copied learner and runner match the source hashes in its metadata.
-The pilot motivated better coverage; it was not discarded when settings changed.
+This pilot was rerun on the corrected seven-doorway graph. It motivates the larger
+main budget; it is not mixed with the historical pilot from the incomplete graph.
 To reproduce it separately:
 
 ```bash
@@ -136,7 +153,7 @@ python scripts/browser_check.py --export-pdf
 ```
 
 The script starts its own local server and isolated headless browser, checks the
-calculator and saved snapshots, verifies real CSS viewports at 390/768/1440 px,
+fixed landmarks, route playback/fading, the annotated update, AI-use navigation, and saved snapshots, verifies real CSS viewports at 390/768/1440 px,
 tests direct file opening, exports the PDF, and stops its own processes. It uses
 standard WebDriver HTTP and BiDi. Node 22+ provides WebSocket; Node 18 needs the
 `undici` module (already available on the development host). Firefox Snap restricts
@@ -156,7 +173,7 @@ python scripts/package_submission.py
 Output: `dist/Chenglong_Zhang_50068179_IOTA_Qlearning.zip`, plus `dist/SHA256SUMS`.
 The ZIP contains an `IOTA-RL/` project folder and `SUBMISSION_SHA256.json` mapping
 included files to hashes. It excludes `.git/`, virtual environments, caches, and
-prior ZIPs. The original course PDF is retained locally and attributed in the
+prior ZIPs, and superseded results from the earlier graph without B–C. The original course PDF is retained locally and attributed in the
 report; it is not needed for reproduction and is excluded from Git and the ZIP.
 The ZIP includes the optional PDF when present. Packaging verifies archive integrity
 and every embedded file hash.
@@ -177,7 +194,7 @@ requires no server-side Python and does not run training on page load.
 code/           Learner, experiment runner, numerical checks, editable HTML template
 configs/        Complete main experimental specification
 results/        120 main-run outputs, exact references, and ensemble plot data
-experiments/    Retained 3,000-episode pilot, configuration, and source copies
+experiments/    Corrected pilot plus clearly marked superseded historical evidence
 report/         Offline/online report, local evidence downloads, figures, and PDF
 scripts/        Report generation, verification, browser checks, ZIP packaging
 docs/           Requirements, data dictionary, learning guide, and QA records

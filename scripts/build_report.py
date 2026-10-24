@@ -4,6 +4,7 @@ import html
 import json
 import re
 import shutil
+import sys
 from pathlib import Path
 
 import matplotlib
@@ -12,6 +13,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "code"))
+from report_visuals import graph_edges, route_scene
 REPORT = ROOT / "report"
 FIGURES = REPORT / "assets/figures"
 DATA = REPORT / "data"
@@ -117,17 +120,15 @@ def convergence_figure(case, title, reference):
         save_figure(fig, f"{case}-convergence" + ("-mobile" if mobile else ""))
 
 
-def environment_map():
+def environment_map(graph):
     positions = {"F": (220, 65), "A": (460, 65), "B": (80, 200), "D": (260, 200), "C": (260, 325), "E": (460, 200)}
-    edges = [("A", "E"), ("B", "D"), ("B", "F"), ("C", "D"), ("D", "E"), ("E", "F")]
-    # Edges are derived from the same declared adjacency; this list has six items
-    # because B-D-E-F is a four-cycle, with A and C as leaves.
+    edges = sorted(graph_edges(graph))
     svg = ['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 395" role="img" aria-labelledby="world-title world-desc">',
            '<title id="world-title">The experimental room map</title>',
-           '<desc id="world-desc">Allowed two-way connections are A-E, B-D, B-F, C-D, D-E, E-F. The original start is C and target is F. No route is supplied to the learner.</desc>']
+           '<desc id="world-desc">Allowed two-way connections are '+', '.join(f'{a}-{b}' for a,b in edges)+'. The original start is C and target is F. No route is supplied to the learner.</desc>']
     for a, b in edges:
         x1, y1 = positions[a]; x2, y2 = positions[b]
-        svg.append(f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="#acb9a8" stroke-width="3"/>')
+        svg.append(f'<line data-edge="{a}-{b}" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="#acb9a8" stroke-width="3"/>')
     for state, (x, y) in positions.items():
         fill = TEAL if state == "F" else "#fffefa"
         stroke = ORANGE if state == "C" else TEAL if state == "F" else "#a9b69f"
@@ -147,8 +148,13 @@ def main():
     summary = json.loads((ROOT / "results/summary.json").read_text())
     group = {e["id"]: [r for r in summary if r["experiment"] == e["id"]] for e in config["experiments"]}
     pilot = json.loads((ROOT / "experiments/pilot_3000/summary.json").read_text())
+    pilot_config = json.loads((ROOT / "experiments/pilot_3000/config.json").read_text())
+    if pilot_config["graph"] != config["graph"]:
+        raise ValueError("Pilot and main results must use the same corrected graph")
+    if (ROOT / "results/config.json").read_bytes() != (ROOT / "configs/experiments.json").read_bytes():
+        raise ValueError("Run the current experiment configuration before generating the report")
     pilot_errors = [max(r["final_error"] for r in pilot if r["experiment"] == case) for case in ["original", "modified"]]
-    slots = {"ENVIRONMENT_MAP": environment_map(), "PILOT_ERRORS": f"{pilot_errors[0]:.3f} (C → F) and {pilot_errors[1]:.3f} (A → C)"}
+    slots = {"ENVIRONMENT_MAP": environment_map(config["graph"]), "ROUTE_SCENE": route_scene(config["graph"]), "PILOT_ERRORS": f"{pilot_errors[0]:.3f} (C → F) and {pilot_errors[1]:.3f} (A → C)"}
     slots["SETTINGS_TABLE"] = simple_table(["Setting", "Used in both required cases"], [("Initial values", "Zero for every allowed move"), ("Learning rate α", "0.1, kept constant"), ("Discount γ", "0.9"), ("Exploration ε", "0.5, kept constant"), ("Training budget", "20,000 episodes per run"), ("Repeated runs", "20 seeds, numbered 0–19"), ("Episode cap", "100 moves")])
     required = []
     snapshot_data = {}
@@ -159,7 +165,7 @@ def main():
         accuracy = [r["error_threshold_episode"] for r in runs if r["error_threshold_episode"] is not None]
         if len(accuracy) != len(runs):
             raise ValueError(f"Required case {case} did not reach the declared full-table tolerance in every seed")
-        goal_distance = len(seed0["greedy_path"].split(" → ")) - 1
+        goal_distance = seed0["optimal_steps"]
         reference = config["defaults"]["gamma"] ** (goal_distance - 1)
         convergence_figure(case, f'{e["start"]} → {e["goal"]}', reference)
         for filename in ["initial_q.csv", "final_q.csv", "visits.csv"]:
@@ -176,11 +182,11 @@ def main():
         if case == "original":
             question = "Can the robot learn to reach F from C?"
             before_tables = "Compare the two tables below. Initially every allowed move is worth zero, so the robot has no learned preference. Afterwards, moves that can lead to F sooner have larger values. The F row stays empty because reaching F ends the episode."
-            table_example = f"Read row <strong>D</strong> in the learned table: moving to B or E gives approximately <strong>{float(final_rows['D']['B']):.3f}</strong>, while going back to C gives <strong>{float(final_rows['D']['C']):.3f}</strong>. B and E both lie on shortest routes to F, so either can be a good choice."
+            table_example = f"Read row <strong>C</strong> in the learned table: moving to B gives approximately <strong>{float(final_rows['C']['B']):.3f}</strong>, while moving to D gives <strong>{float(final_rows['C']['D']):.3f}</strong>. The B–C doorway makes C → B → F the shorter choice, so B is preferred."
         else:
             question = "What changes when the robot starts in A and aims for C?"
             before_tables = "We reset all values to zero and train again. This time, entering C earns the reward and ends the episode. Notice that C is now the empty terminal row; F becomes an ordinary room with available moves."
-            table_example = f"Now read row <strong>E</strong>: moving to D has value <strong>{float(final_rows['E']['D']):.3f}</strong>, whereas moving to A or F is approximately <strong>{float(final_rows['E']['A']):.3f}</strong>. The robot should head towards D, then enter C."
+            table_example = f"Now read row <strong>E</strong>: moving to D has value <strong>{float(final_rows['E']['D']):.3f}</strong>, compared with <strong>{float(final_rows['E']['F']):.3f}</strong> for F and <strong>{float(final_rows['E']['A']):.3f}</strong> for A. The robot should head towards D, then enter C."
         required.append(f'''<article class="case {case}" id="case-{case}"><div class="case-header"><div><span class="case-tag">EXPERIMENT {number}</span><h3>{question}</h3></div></div>
 <p class="evidence-intro">{before_tables} These are the saved initial and final tables from seed 0.</p>
 <div class="q-tables">{tables}</div><p class="table-reading">{table_example}</p>
@@ -198,7 +204,8 @@ def main():
     slots["REQUIRED_RESULTS"] = "\n".join(required)
     original_time = np.median([r["error_threshold_episode"] for r in group["original"]])
     modified_time = np.median([r["error_threshold_episode"] for r in group["modified"]])
-    slots["REQUIRED_COMPARISON"] = f'<p>The whole-table accuracy check was reached at a median episode of <strong>{fmt(original_time)} for C → F</strong> and <strong>{fmt(modified_time)} for A → C</strong>. Under these settings, the second case learned the full table sooner on that measure. The shaded bands show randomness across seeds; these medians are not guaranteed learning times.</p>'
+    faster = "A → C" if modified_time < original_time else "C → F"
+    slots["REQUIRED_COMPARISON"] = f'<p>The whole-table accuracy check was reached at a median episode of <strong>{fmt(original_time)} for C → F</strong> and <strong>{fmt(modified_time)} for A → C</strong>. Under these settings, {faster} learned the full table sooner on that measure. The shaded bands show randomness across seeds; these medians are not guaranteed learning times.</p>'
     slots["SNAPSHOT_JSON"] = json.dumps(snapshot_data, separators=(",", ":")).replace("<", "\\u003c")
     control_ids = ["original", "start_control", "factorial_bf", "modified", "factorial_bc"]
     comparison = []
@@ -224,7 +231,7 @@ def main():
     save_figure(fig, "controls")
     med = {case: np.median([r["error_threshold_episode"] for r in group[case]]) for case in control_ids}
     diff = [a["error_threshold_episode"]-b["error_threshold_episode"] for a,b in zip(group["start_control"], group["original"])]
-    slots["CONTROL_ANALYSIS"] = f'''<article><h3>A shorter route can leave a slower table.</h3><p>Holding the goal at F, changing the start from C to A reduces the shortest route from three steps to two. Yet median full-table accuracy moves from {fmt(med['original'])} to {fmt(med['start_control'])} episodes. The descriptive seed-matched difference is {interval(diff)} episodes (median [P10, P90]). Starting nearer the goal gives fewer opportunities to sample distant branches in each episode. This interpretation is consistent with the saved visit counts; it is not a universal law about start distance.</p></article><article><h3>The target changes the learning problem.</h3><p>Holding the start at B, switching target F to C increases the shortest route from one step to two, yet median full-table accuracy improves from {fmt(med['factorial_bf'])} to {fmt(med['factorial_bc'])} episodes. Goal F terminates on entering a well-connected room, while reaching leaf C requires passing through D. Coverage and termination structure matter beyond path length. Final reference tables for the same goal agree regardless of start, while changing the goal changes valid terminal actions and values.</p></article>'''
+    slots["CONTROL_ANALYSIS"] = f'''<article><h3>Equal route lengths can produce different learning times.</h3><p>Holding the goal at F, both starts C and A are two moves away. Yet median whole-table accuracy occurs at {fmt(med['original'])} and {fmt(med['start_control'])} episodes respectively. The descriptive seed-matched difference, A minus C, is {interval(diff)} episodes (median [P10, P90]). Which branch an episode starts in affects which actions are sampled. The reference Q-table is identical for these two starts; the trajectories used to learn it differ.</p></article><article><h3>Equal distances do not make the goals equivalent.</h3><p>From B, both F and C can now be reached in one move. The median whole-table accuracy episodes are nevertheless {fmt(med['factorial_bf'])} for B → F and {fmt(med['factorial_bc'])} for B → C. Changing the goal changes which transitions receive a reward and terminate the episode, affecting subsequent coverage. These comparisons show why shortest-route length alone does not determine whole-table learning speed; they do not establish a universal rate.</p></article>'''
     ablation = group["no_exploration"]
     successes = sum(r["greedy_success"] and r["greedy_steps"] == r["optimal_steps"] for r in ablation)
     err = [r["final_error"] for r in ablation]

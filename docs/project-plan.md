@@ -16,13 +16,13 @@ Reading the openings in the figure suggests the following undirected connections
 | Room | Adjacent rooms |
 | --- | --- |
 | A | E |
-| B | D, F |
-| C | D |
+| B | C, D, F |
+| C | B, D |
 | D | B, C, E |
 | E | A, D, F |
 | F | B, E |
 
-This adjacency is an interpretation to review against the figure before implementation.
+This adjacency includes the B–C doorway clarified by the user from Figure 1; all current experiments were rerun with it.
 We should redraw it ourselves for the report and explain that the graph preserves
 room connectivity rather than physical distances.
 
@@ -90,15 +90,14 @@ runtime dependency on a CDN, external API, or training process.
 Suggested reading sequence:
 
 1. The question and a concise overview of the six-room world.
-2. One worked Q-learning update with a clearly labeled illustrative calculator.
+2. A fixed, annotated update sequence showing how goal reward propagates back to C.
 3. The exact environment and experiment settings.
 4. Original configuration: initial/final tables, convergence plot, and policy.
 5. Modified configuration: the same evidence in the same format.
 6. Comparison across seeds, coverage diagnostics, and limits of the conclusions.
 7. Lessons, reproduction instructions, references, and AI-use statement.
 
-Potential interactions include a policy stepper, a Q-table action inspector, and an
-update calculator. They should each answer a learning question. Static captions and
+Potential interactions include a policy stepper, a Q-table action inspector, and illustrative route traces. They should each answer a learning question. Static captions and
 summaries must remain available without using them. Design and accessibility can be
 refined after the numerical story is sound. A print stylesheet can support a PDF
 export from the same report.

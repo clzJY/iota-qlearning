@@ -1,0 +1,10 @@
+Tool: built-in image_gen, reference-based extraction, transparent backgrounds preserved.
+Reference: robot-navigation-v2.png (previous generated conceptual illustration).
+The floorplan geometry and animated paths are code-defined and checked separately.
+
+Robot -> report/assets/illustrations/robot-marker-v3.png
+Use case: background-extraction. Edit target: the provided illustration. Extract ONLY the small dark teal circular robot vacuum from the foreground, keeping its elegant matte material, amber trim, and slightly elevated viewing angle. Remove every wall, floor, background, docking station, and cast shadow. Center the isolated robot, tightly framed so it fills about 80% of the canvas. Genuine transparent background, clean alpha edges, no text, no new objects. This cutout will be a fixed robot marker in an exact animated educational floorplan.
+
+Dock -> report/assets/illustrations/dock-marker-v3.png
+Use case: background-extraction. Edit target: the provided illustration. Extract ONLY the small warm ivory docking station with its subtle amber light from the far room, retaining the elegant matte material and elevated front view. Remove the robot, all architecture, floor, and background. Center the isolated charging dock, tightly framed so it fills about 80% of the canvas. Genuine transparent background, clean alpha edges; retain the little amber lamp on the dock but no broad cast glow or shadow. No text and no new objects. This will be the stationary destination marker in an exact educational floorplan.
+

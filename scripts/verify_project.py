@@ -42,8 +42,8 @@ class OfflineHTMLCheck(HTMLParser):
         attrs = dict(attributes)
         if "id" in attrs:
             self.ids.append(attrs["id"])
-        if tag in {"a", "link", "img", "script"}:
-            key = "href" if tag in {"a", "link"} else "src"
+        if tag in {"a", "link", "img", "image", "script"}:
+            key = "href" if tag in {"a", "link", "image"} else "src"
             if attrs.get(key): self.references.append(attrs[key])
         if tag == "img": self.images.append(attrs)
         if tag == "script" and attrs.get("src"): self.scripts.append(attrs["src"])
@@ -125,6 +125,9 @@ def verify(replay=False):
         if parts.scheme or parts.netloc:
             # External citations/downloads are allowed; external runtime assets are not.
             assert reference not in parser.scripts
+            continue
+        if reference.startswith("#route-"):
+            assert reference[1:] in parser.ids
             continue
         if parts.path:
             local = (ROOT / "report" / unquote(parts.path)).resolve()

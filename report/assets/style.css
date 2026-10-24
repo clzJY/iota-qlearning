@@ -53,3 +53,36 @@
 @media(max-width:700px){.hero{grid-template-columns:1fr;padding-top:37px;padding-bottom:38px;gap:24px}.hero h1{font-size:52px;letter-spacing:-1.9px}.hero .standfirst{font-size:19px}.hero .intro{font-size:15px}.hero-illustration{max-width:490px;justify-self:center}.hero-illustration figcaption{font-size:10px;padding-top:11px}.hero-actions{margin-bottom:26px}.problem-grid{grid-template-columns:1fr;gap:27px}.problem-grid .prose{font-size:16px}.environment-figure{padding:15px}.environment-figure figcaption{font-size:11px}.equation{font-size:23px}.case-header h3{font-size:28px}.q-tables{gap:15px}.q-table td,.q-table th{font-size:11px;padding:11px 4px}.evidence-intro,.table-reading,.result-summary,.learned-route p{font-size:15px}.table-reading{padding:16px 18px}.required-comparison h3{font-size:27px}.required-comparison p{font-size:15px}.extension-details>summary{font-size:22px}.extension-content>p{font-size:14px}}
 @media print{.hero{padding-top:24px;padding-bottom:25px;grid-template-columns:1fr 1fr;gap:20px}.hero h1{font-size:32pt;letter-spacing:-1.4px}.hero .standfirst{font-size:12pt}.hero .intro{font-size:10pt}.hero-illustration figcaption{font-size:7pt}.problem-grid{grid-template-columns:1.15fr 1fr;gap:22px}.problem-grid .prose,.method-followup,.required-comparison p,.evidence-intro,.table-reading,.result-summary,.learned-route p{font-size:9pt}.environment-figure{padding:10px;break-inside:avoid}.environment-figure figcaption{font-size:7pt}.equation{font-size:15pt}.case-header h3{font-size:20pt}.q-tables h4{font-size:10pt}.q-table td,.q-table th{font-size:7pt;padding:7px 3px}.table-reading{padding:10px 13px;break-inside:avoid}.learned-route{margin:18px 0;break-inside:avoid}.learned-route .path{font-size:9pt;padding:8px 12px}.learned-route>span{font-size:8pt}.plot-heading{font-size:13pt}.required-comparison h3{font-size:18pt}.extension-details>summary{font-size:16pt}.extension-content>p{font-size:9pt}.hero,.takeaway-section{background:white}.section-heading{break-after:avoid}}
 @media print{#question{break-before:page}}
+
+/* Corrected floorplan: the solid landmarks stay still; only route echoes move. */
+.route-illustration{padding:16px 10px 8px;background:#efefe6;border:1px solid #e0e3d6;border-radius:5px}
+.route-illustration svg{width:100%;height:auto;display:block;overflow:visible}
+.floor-room-label{font:31px Georgia,serif;fill:#314b3b}
+.floor-marker-label{font:11px 'DejaVu Sans Mono',monospace;letter-spacing:1px;fill:#52644f}
+.route-track{stroke-dasharray:1;stroke-dashoffset:0;animation:route-draw 8s linear infinite;animation-delay:var(--route-delay)}
+@keyframes route-draw{0%{stroke-dashoffset:1;opacity:.35}74%{stroke-dashoffset:0;opacity:.95}90%{stroke-dashoffset:0;opacity:.8}100%{stroke-dashoffset:0;opacity:.25}}
+.routes-paused .route-track{animation-play-state:paused}
+.route-legend{display:flex;justify-content:center;flex-wrap:wrap;gap:7px 16px;font-size:10px;line-height:1.5;padding:5px 0 10px}
+.route-key{display:inline-flex;gap:6px;align-items:center}
+.route-key i{width:14px;height:3px;border-radius:2px}
+.route-motion-button{display:block;margin:0 auto 8px;border:1px solid #b5c2b0;background:#fafbf5;color:var(--ink);font-size:10px;padding:5px 11px;border-radius:3px;cursor:pointer}
+.route-motion-button[hidden]{display:none}
+.hero-illustration.route-illustration figcaption{border-top:1px solid #d6ddce;font-size:10px;padding:11px 10px 3px}
+.worked-example{margin-top:35px;padding:28px 30px;background:#f8faf3;border:1px solid #cbd9ce;border-radius:4px}
+.worked-example>p{font-size:15px;max-width:880px;line-height:1.85}
+.worked-example>.eyebrow{font-size:10px;color:var(--teal)}
+.update-steps{display:grid;grid-template-columns:1fr 1fr;gap:30px;list-style:none;padding:0;margin:25px 0}
+.update-steps li{padding-top:18px;border-top:2px solid #b9cdbb}
+.update-label{display:block;font-size:16px;font-weight:700;margin-bottom:12px}
+.update-steps p{font-size:14px;line-height:1.8}
+.update-equation{font-family:var(--mono);font-size:12px;background:#eaf1e6;padding:12px;line-height:1.9;border-radius:2px}
+.update-equation strong{color:var(--teal);white-space:nowrap}
+.worked-takeaway{padding-top:18px;border-top:1px solid #d7e1cf}
+.ai-statement{scroll-margin-top:30px}
+.ai-statement h3{font-size:21px}
+.ai-statement p{font-size:14px;line-height:1.85}
+@media(max-width:700px){.masthead nav{gap:8px}.route-illustration{padding:12px 3px 6px}.route-legend{font-size:9px;gap:5px 11px}.hero-illustration.route-illustration figcaption{font-size:10px}.worked-example{padding:22px 19px}.update-steps{grid-template-columns:1fr;gap:20px}.update-equation{font-size:11px}.worked-example>p{font-size:14px}.ai-statement p{font-size:13px}}
+@media(prefers-reduced-motion:reduce){.route-track{animation:none;stroke-dashoffset:0}.route-echo{display:none}}
+@media print{.route-track{animation:none;stroke-dashoffset:0;opacity:.85}.route-echo,.route-motion-button{display:none}.route-illustration{padding:10px 5px}.route-legend{font-size:6pt}.floor-room-label{font-size:31px}.worked-example{padding:16px;margin-top:22px;break-inside:avoid}.worked-example>p{font-size:9pt}.update-steps{gap:18px;grid-template-columns:1fr 1fr}.update-steps p{font-size:8pt}.update-label{font-size:10pt}.update-equation{font-size:7pt}.ai-statement p{font-size:8pt}}
+.floor-marker-label{font-size:18px}
+@media(max-width:700px){.floor-room-label{font-size:36px}.floor-marker-label{font-size:24px}}

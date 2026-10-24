@@ -85,11 +85,19 @@ def main(export_pdf=False):
         assert script("return document.querySelectorAll('.q-tables .q-table').length") == 4
         assert script("return [...document.querySelectorAll('.q-tables')].every(table => !table.closest('details'))"), "Required tables must remain visible without interaction"
         assert script("return !document.querySelector('.stat-strip') && document.querySelector('h1').textContent.includes('goal')"), "Opening must describe the problem without a statistics strip"
-        assert script("return Boolean(document.querySelector('.hero-illustration img').naturalWidth)"), "Opening illustration failed to load"
-        assert script("return document.getElementById('calc-value').textContent") == "0.234"
-        result = script("document.getElementById('transition').value='terminal'; document.getElementById('transition').dispatchEvent(new Event('change',{bubbles:true})); return document.getElementById('calc-value').textContent")
-        assert result == "0.280", result
-        assert script("return document.getElementById('next-q').disabled")
+        assert script("return document.querySelectorAll('#route-scene .route-track').length") == 3
+        assert script("return document.querySelectorAll('#fixed-robot image, #fixed-destination image').length") == 2
+        assert script("return !document.querySelector('#update-form') && document.getElementById('worked-example').textContent.includes('0.009')"), "Worked example must explain reward propagation without sliders"
+        motion = script("const svg=document.getElementById('route-scene');const robot=document.getElementById('fixed-robot');const dock=document.getElementById('fixed-destination');const echo=document.querySelector('.route-echo');function position(element){const r=element.getBoundingClientRect();return [r.x,r.y,r.width,r.height]}const before=[position(robot),position(dock)];svg.pauseAnimations();svg.setCurrentTime(1);const first=[echo.getCTM().e,echo.getCTM().f,Number(getComputedStyle(echo).opacity)];svg.setCurrentTime(7.9);const last=[echo.getCTM().e,echo.getCTM().f,Number(getComputedStyle(echo).opacity)];const after=[position(robot),position(dock)];svg.unpauseAnimations();return {before,after,first,last}")
+        assert motion["before"] == motion["after"], "Robot or destination moved"
+        assert motion["first"][:2] != motion["last"][:2], "Route echo did not move"
+        assert motion["last"][2] < motion["first"][2] / 10, motion
+        script("document.getElementById('route-motion').click()")
+        assert script("return document.getElementById('route-scene').animationsPaused()")
+        script("document.getElementById('route-motion').click()")
+        assert not script("return document.getElementById('route-scene').animationsPaused()")
+        ai_target = command("POST", "/execute/async", {"script": "const done=arguments[arguments.length-1];window.addEventListener('hashchange',()=>done(location.hash),{once:true});document.querySelector('nav a:last-child').click()", "args": []})
+        assert ai_target == "#ai-use", ai_target
         result = script("document.querySelector('.snapshot-details').open=true; document.getElementById('snapshot-case').value='modified'; document.getElementById('snapshot-case').dispatchEvent(new Event('change')); document.getElementById('snapshot-episode').value='20000'; document.getElementById('snapshot-episode').dispatchEvent(new Event('change')); return document.querySelector('#snapshot-table caption').textContent")
         assert "A → C" in result and "20000" in result
         assert script("return document.querySelectorAll('#snapshot-table tbody tr').length") == 6
@@ -115,7 +123,7 @@ def main(export_pdf=False):
             offline_report = Path(temporary) / "report"
             shutil.copytree(ROOT / "report", offline_report)
             command("POST", "/url", {"url": (offline_report / "index.html").as_uri()})
-            offline_ok = script("return document.title.includes('Q-learning') && document.getElementById('calc-value').textContent==='0.234' && [...document.images].every(i=>i.complete && i.naturalWidth>0)")
+            offline_ok = script("return document.title.includes('Q-learning') && document.getElementById('worked-example').textContent.includes('0.009') && document.querySelectorAll('#route-scene .route-track').length===3 && [...document.images].every(i=>i.complete && i.naturalWidth>0)")
             assert offline_ok, "Direct file opening failed"
         if export_pdf:
             command("POST", "/url", {"url": local_url})
@@ -137,7 +145,9 @@ def main(export_pdf=False):
                   "problem_first_opening_without_statistics_strip": True,
                   "required_qtables_outside_collapsible_sections": True,
                   "conceptual_opening_illustration_loaded": True,
-                  "update_calculator_checked": True, "saved_snapshot_control_checked": True,
+                  "annotated_reward_propagation_without_sliders": True, "saved_snapshot_control_checked": True,
+                  "fixed_robot_and_destination_checked": True, "three_route_echoes_move_and_fade": True,
+                  "route_pause_button_checked": True, "ai_use_menu_checked": True,
                   "viewports": viewport_checks, "direct_file_opening_checked": bool(offline_ok),
                   "direct_file_opening_method": "byte-identical temporary copy, compatible with Firefox Snap confinement",
                   "pdf_exported": export_pdf}

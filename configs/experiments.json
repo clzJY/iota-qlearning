@@ -9,10 +9,12 @@
       "E"
     ],
     "B": [
+      "C",
       "D",
       "F"
     ],
     "C": [
+      "B",
       "D"
     ],
     "D": [
@@ -107,5 +109,6 @@
       "epsilon": 0.0,
       "role": "extension: diagnose false stabilization"
     }
-  ]
+  ],
+  "environment_revision": "2026-10-24-corrected-B-C-doorway"
 }

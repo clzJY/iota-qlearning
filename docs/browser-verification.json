@@ -6,8 +6,12 @@
   "problem_first_opening_without_statistics_strip": true,
   "required_qtables_outside_collapsible_sections": true,
   "conceptual_opening_illustration_loaded": true,
-  "update_calculator_checked": true,
+  "annotated_reward_propagation_without_sliders": true,
   "saved_snapshot_control_checked": true,
+  "fixed_robot_and_destination_checked": true,
+  "three_route_echoes_move_and_fade": true,
+  "route_pause_button_checked": true,
+  "ai_use_menu_checked": true,
   "viewports": [
     {
       "width": 390,

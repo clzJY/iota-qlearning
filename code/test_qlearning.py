@@ -35,6 +35,27 @@ class QLearningChecks(unittest.TestCase):
             self.world.step(self.world.index["F"], self.world.index["B"])
         self.assertEqual(self.world.step(1, 5), (5, 1, True))
 
+    def test_corrected_b_c_doorway_and_shortest_routes(self):
+        b, c, d = (self.world.index[name] for name in ["B", "C", "D"])
+        self.assertEqual(set(self.world.actions[c]), {b, d})
+        self.assertEqual(self.world.step(c, b), (b, 0, False))
+        self.assertEqual(self.world.step(b, c), (c, 0, False))
+        self.assertEqual(self.world.distances()["C"], 2)
+        oracle = reference_q(self.world, .9)
+        self.assertAlmostEqual(oracle[c, b], .9)
+        self.assertAlmostEqual(oracle[c, d], .81)
+        changed_goal = RoomWorld(CONFIG["graph"], "C")
+        self.assertEqual(changed_goal.step(b, c), (c, 1, True))
+        self.assertEqual(changed_goal.distances()["A"], 3)
+
+    def test_annotated_reward_propagation_example(self):
+        q = np.zeros((6, 6))
+        b, c, f = (self.world.index[name] for name in ["B", "C", "F"])
+        update(q, b, f, 1, f, True, [], .1, .9)
+        self.assertAlmostEqual(q[b, f], .100)
+        update(q, c, b, 0, b, False, self.world.actions[b], .1, .9)
+        self.assertAlmostEqual(q[c, b], .009)
+
     def test_random_ties_and_exploration_ignore_invalid_cells(self):
         q = np.full((6, 6), 999.0)
         q[3, self.world.actions[3]] = 0

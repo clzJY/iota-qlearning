@@ -1,27 +1,24 @@
 'use strict';
 
-// This calculator is illustrative. Experimental values are loaded below from
-// embedded, saved checkpoints; no live training or external request is involved.
-const form = document.getElementById('update-form');
-function calculateUpdate() {
-  const ids = ['old-q', 'next-q', 'alpha', 'gamma'];
-  const [oldQ, nextQ, alpha, gamma] = ids.map(id => {
-    const value = Number(document.getElementById(id).value);
-    document.getElementById(`${id}-label`).textContent = value.toFixed(2);
-    return value;
-  });
-  const terminal = document.getElementById('transition').value === 'terminal';
-  const target = terminal ? 1 : gamma * nextQ;
-  document.getElementById('next-q').disabled = terminal;
-  document.getElementById('calc-detail').textContent =
-    `${oldQ.toFixed(3)} + ${alpha.toFixed(2)} × (${target.toFixed(3)} − ${oldQ.toFixed(3)})`;
-  document.getElementById('calc-value').textContent = (oldQ + alpha * (target - oldQ)).toFixed(3);
+// The solid robot and dock stay fixed. Only translucent route echoes move.
+const scene = document.getElementById('route-scene');
+const motionButton = document.getElementById('route-motion');
+const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+function setRoutePaused(paused) {
+  if (paused) scene.pauseAnimations(); else scene.unpauseAnimations();
+  scene.closest('figure').classList.toggle('routes-paused', paused);
+  motionButton.textContent = paused ? 'Play routes' : 'Pause routes';
+  motionButton.setAttribute('aria-pressed', String(paused));
 }
-form.addEventListener('input', calculateUpdate);
-form.addEventListener('change', calculateUpdate);
-form.addEventListener('submit', event => event.preventDefault());
-calculateUpdate();
+function applyMotionPreference() {
+  setRoutePaused(motionPreference.matches);
+  motionButton.hidden = motionPreference.matches;
+}
+motionButton.addEventListener('click', () => setRoutePaused(!scene.animationsPaused()));
+motionPreference.addEventListener('change', applyMotionPreference);
+applyMotionPreference();
 
+// Values below are saved experimental checkpoints, not a live training run.
 const saved = JSON.parse(document.getElementById('experiment-data').textContent);
 const caseSelect = document.getElementById('snapshot-case');
 const episodeSelect = document.getElementById('snapshot-episode');

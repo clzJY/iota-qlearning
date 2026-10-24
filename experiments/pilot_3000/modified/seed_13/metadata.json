@@ -18,7 +18,7 @@
     "stability_window": 100
   },
   "seed": 13,
-  "config_sha256": "87a77ddf697ed6ed2cc8776cadbacdb239fd9b6d18490ef7c00b0f8d4a0f38b7",
+  "config_sha256": "65f1d274310e1655cf1b98a36c69c666968201e92f2cba13e8c58383482362c7",
   "learner_sha256": "bfad7e94d24d7f833e3fb002be5dc73fbf236a4e0b36545ff16a03f73f1c5f68",
   "runner_sha256": "e1fe934b71d5f033e12f9f6a358575650146f7b7d2a540ab1f9bccbf2eb97dc6",
   "python": "3.13.12",
@@ -31,18 +31,18 @@
     "goal": "C",
     "seed": 13,
     "epsilon": 0.2,
-    "final_error": 0.05784166507409205,
-    "final_residual": 0.057841665074091164,
-    "min_visits": 30,
+    "final_error": 0.1673502292184419,
+    "final_residual": 0.16683710491035975,
+    "min_visits": 20,
     "unvisited_pairs": 0,
-    "total_steps": 10946,
+    "total_steps": 10602,
     "truncated_episodes": 0,
     "greedy_steps": 3,
     "greedy_success": true,
     "optimal_steps": 3,
     "greedy_path": "A \u2192 E \u2192 D \u2192 C",
     "error_threshold_episode": null,
-    "delta_threshold_episode": null
+    "delta_threshold_episode": 2877
   },
   "all_start_evaluation": {
     "A": {
@@ -59,12 +59,11 @@
     "B": {
       "path": [
         "B",
-        "D",
         "C"
       ],
       "success": true,
-      "steps": 2,
-      "optimal_steps": 2
+      "steps": 1,
+      "optimal_steps": 1
     },
     "C": {
       "path": [
@@ -97,12 +96,11 @@
       "path": [
         "F",
         "B",
-        "D",
         "C"
       ],
       "success": true,
-      "steps": 3,
-      "optimal_steps": 3
+      "steps": 2,
+      "optimal_steps": 2
     }
   }
 }
