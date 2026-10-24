@@ -56,9 +56,17 @@ async function main() {
       const active = await script("return [...document.querySelectorAll('.reading-steps a[aria-current]')].map(a=>a.textContent).join('')");
       if (active!==part) throw new Error(`Reading indicator at ${width}px: ${target} expected ${part}, got ${active}`);
     }
+    await script("document.getElementById('modified-convergence').scrollIntoView({behavior:'instant'})");
+    await frame();
+    const phaseLayout = await script("const sub=document.getElementById('reading-subphase');const main=document.getElementById('reading-current');const a=sub.getBoundingClientRect();const b=main.getBoundingClientRect();const summaries=[...document.querySelectorAll('#comparison>details>summary')];return {subphase:sub.textContent,mainphase:main.textContent,left:a.x,right:b.x,sameTitles:new Set(summaries.map(element=>getComputedStyle(element).fontSize)).size===1}");
+    if (!phaseLayout.subphase.includes('Experiment 2') || phaseLayout.left>=phaseLayout.right || !phaseLayout.sameTitles) throw new Error(JSON.stringify(phaseLayout));
+    if (width===390) {
+      const shot = await command('GET', '/screenshot');
+      fs.writeFileSync(path.join(options.previewDirectory, 'subsection-mobile.png'), Buffer.from(shot, 'base64'));
+    }
     await script("document.getElementById('report-guide').scrollIntoView({behavior:'instant'})");
     await frame();
-    results.push({ width, actual_inner_width: dimensions.inner, horizontal_overflow: false, quick_links_one_row: true, quick_links_scrollable: quickLinks.scrollable, five_reading_positions_checked: true });
+    results.push({ width, actual_inner_width: dimensions.inner, horizontal_overflow: false, quick_links_one_row: true, quick_links_scrollable: quickLinks.scrollable, five_reading_positions_checked: true, subsection_middle_main_part_right: true, part4_title_sizes_match: true });
     if (width === 390) {
       const shot = await command('GET', '/screenshot');
       fs.writeFileSync(path.join(options.previewDirectory, 'report-guide-mobile.png'), Buffer.from(shot, 'base64'));

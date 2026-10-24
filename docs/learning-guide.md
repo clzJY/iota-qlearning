@@ -117,8 +117,9 @@ Each figure has its own pause control.
 
 The five quick links at the bottom of The Problem jump to the five named report
 parts. They stay in one row and scroll horizontally on narrow screens. The sticky
-reading indicator follows the current part, including which experiment is being
-read. References and the AI statement are grouped with Part 5. The two Going Further questions are additional
+reading indicator shows the subsection in the middle and the main part on the
+right. Subsection links jump directly to tables, plots and supporting explanations.
+Those panels are open by default, and links reopen them if they have been closed. References and the AI statement are grouped with Part 5. The two Going Further questions are additional
 investigations. Their visible answers are: equal route lengths do not imply equal
 whole-table learning times in this protocol; and a good route can coexist with
 inaccurate unvisited actions (14/20 shortest without exploration, 0/20 accurate

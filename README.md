@@ -12,7 +12,10 @@ A Q-learning study of robot navigation through six connected rooms.
 ## Read the report
 
 Open `report/index.html` in a browser. All essential text, tables, figures and
-scripts are local. Alternatively, from the project root run:
+scripts are local. The Jump to links include direct access to subsection tables,
+plots and explanations. Evidence panels are open by default; links reopen them
+if closed. The reading bar shows the subsection in the middle and the main part
+on the right. Alternatively, from the project root run:
 
 ```bash
 python -m http.server 8000 --directory report

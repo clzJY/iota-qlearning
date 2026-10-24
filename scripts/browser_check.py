@@ -102,16 +102,19 @@ def main(export_pdf=False, preview_directory=None):
         assert script("const links=[...document.querySelectorAll('nav[aria-label=\"Report sections\"] a')];return links.findIndex(a=>a.hash==='#ai-use')<links.findIndex(a=>a.hash==='#reproduce')"), "AI use must precede Report & files"
         assert script("return document.querySelectorAll('#report-guide .requirement-link').length===5 && [...document.querySelectorAll('#report-guide a')].every(a=>document.getElementById(a.hash.slice(1)))"), "Every report requirement needs a valid direct link"
         assert script("const ids=['method','setup','results','required-comparison','takeaways'];const titles=['Motivation and method','Environment and experimental setup','Results for both configurations','Comparison and critical analysis','Takeaways and references'];return ids.every((id,i)=>document.querySelector('#'+id+' h2').textContent===titles[i]) && document.getElementById('takeaways').contains(document.getElementById('references')) && document.getElementById('takeaways').contains(document.getElementById('ai-use'))"), "Five main headings and their contents must match the brief"
-        assert script("return !document.querySelector('.requirement-cards') && document.getElementById('report-guide').parentElement.id==='question' && document.querySelectorAll('#report-guide a').length===5"), "Use five simple quick links at the bottom of The Problem"
+        assert script("return !document.querySelector('.requirement-cards') && document.getElementById('report-guide').parentElement.id==='question' && document.querySelectorAll('#report-guide .requirement-link').length===5 && document.querySelectorAll('.jump-subsections a').length===12"), "Keep main links and direct subsection links at the bottom of The Problem"
+        assert script("return [...document.querySelectorAll('#setup details,#results details,#comparison details')].every(panel=>panel.open)"), "Supporting explanations, tables and figures must be visible by default"
+        assert script("return [...document.querySelectorAll('#comparison .chart,#comparison table')].every(element=>!element.closest('details:not([open])'))"), "Additional evidence must be visible without opening a panel"
+        assert script("const sizes=[...document.querySelectorAll('#comparison>details>summary')].map(element=>getComputedStyle(element).fontSize);return sizes.length===3 && new Set(sizes).size===1"), "Three Part 4 panel titles must have identical font size"
         reading_checks = []
         for target,part in [("method","1"),("setup","2"),("results","3"),("case-original","3"),("case-modified","3"),("required-comparison","4"),("comparison","4"),("takeaways","5"),("references","5"),("ai-use","5")]:
             script(f"document.getElementById({json.dumps(target)}).scrollIntoView({{behavior:'instant'}})")
             command("POST", "/execute/async", {"script": "const done=arguments[arguments.length-1];requestAnimationFrame(()=>requestAnimationFrame(()=>requestAnimationFrame(()=>done(true))))", "args": []})
-            state = script("return {caption:document.getElementById('reading-caption').textContent,title:document.getElementById('reading-current').textContent,active:[...document.querySelectorAll('.reading-steps a[aria-current]')].map(a=>a.textContent),top:document.getElementById('reading-position').getBoundingClientRect().top}")
+            state = script("return {caption:document.getElementById('reading-caption').textContent,title:document.getElementById('reading-current').textContent,subphase:document.getElementById('reading-subphase').textContent,active:[...document.querySelectorAll('.reading-steps a[aria-current]')].map(a=>a.textContent),top:document.getElementById('reading-position').getBoundingClientRect().top}")
             assert state["active"] == [part], (target,state)
             assert state["caption"].startswith(f"PART {part} OF 5"), (target,state)
             assert abs(state["top"]) < 1, (target,state)
-            if target == "case-modified": assert "Experiment 2" in state["caption"]
+            if target == "case-modified": assert "Experiment 2" in state["subphase"]
             reading_checks.append({"target":target,"part":part,"checked":True})
         script("document.getElementById('report-guide').scrollIntoView({behavior:'instant'});document.documentElement.style.scrollBehavior='auto'")
         quick_target = command("POST", "/execute/async", {"script": "const done=arguments[arguments.length-1];window.addEventListener('hashchange',()=>requestAnimationFrame(()=>requestAnimationFrame(()=>done({hash:location.hash,part:document.getElementById('reading-caption').textContent}))),{once:true});document.querySelector('#report-guide a[href=\"#setup\"]').click()", "args": []})
@@ -127,8 +130,19 @@ def main(export_pdf=False, preview_directory=None):
         assert script("return document.getElementById('modified-route-scene').animationsPaused() && !document.getElementById('route-scene').animationsPaused()"), "Figure controls must be independent"
         script("document.getElementById('modified-route-motion').click()")
         assert not script("return document.getElementById('modified-route-scene').animationsPaused()")
+        script("document.getElementById('equal-routes-evidence').open=false")
         evidence_target = command("POST", "/execute/async", {"script": "const done=arguments[arguments.length-1];window.addEventListener('hashchange',()=>done(document.getElementById('equal-routes-evidence').open),{once:true});document.querySelector('#equal-routes-conclusion>a').click()", "args": []})
         assert evidence_target, "Evidence link must open the correct panel"
+        subsection_checks = []
+        for target in ["implementation-choices","original-tables","original-convergence","modified-tables","modified-convergence","reference-calculation","saved-qtables","equal-routes-evidence","insight","pilot-settings"]:
+            script(f"document.documentElement.style.scrollBehavior='auto';for(const panel of document.querySelectorAll('#setup details,#results details,#comparison details'))panel.open=false;location.hash='report-guide';document.getElementById('report-guide').scrollIntoView({{behavior:'instant'}})")
+            command("POST", "/execute/async", {"script": "const done=arguments[arguments.length-1];requestAnimationFrame(()=>requestAnimationFrame(()=>done(true)))", "args": []})
+            state = command("POST", "/execute/async", {"script": "const done=arguments[arguments.length-1];const id="+json.dumps(target)+";window.addEventListener('hashchange',()=>requestAnimationFrame(()=>requestAnimationFrame(()=>requestAnimationFrame(()=>{const target=document.getElementById(id);done({hash:location.hash,subphase:document.getElementById('reading-subphase').getAttribute('href'),visible:!target.closest('details:not([open])'),top:target.getBoundingClientRect().top,barBottom:document.getElementById('reading-position').getBoundingClientRect().bottom})}))),{once:true});document.querySelector('.jump-subsections a[href=\"#'+id+'\"]').click()", "args": []})
+            assert state["hash"] == "#"+target and state["visible"], (target,state)
+            assert state["subphase"] == "#"+target, (target,state)
+            assert state["top"] >= state["barBottom"]-1, (target,state)
+            subsection_checks.append({"target":target,"opens_and_tracks":True})
+        script("document.documentElement.style.scrollBehavior='';document.querySelectorAll('#setup details,#results details,#comparison details').forEach(panel=>panel.open=true)")
         result = script("document.querySelector('.snapshot-details').open=true; document.getElementById('snapshot-case').value='modified'; document.getElementById('snapshot-case').dispatchEvent(new Event('change')); document.getElementById('snapshot-episode').value='20000'; document.getElementById('snapshot-episode').dispatchEvent(new Event('change')); return document.querySelector('#snapshot-table caption').textContent")
         assert "A → C" in result and "20000" in result
         assert script("return document.querySelectorAll('#snapshot-table tbody tr').length") == 6
@@ -188,6 +202,8 @@ def main(export_pdf=False, preview_directory=None):
                   "ai_use_before_report_files": True,
                   "five_named_report_parts": True, "single_row_quick_links": True,
                   "sticky_reading_position": reading_checks, "quick_link_updates_position": True,
+                  "direct_subsection_links": subsection_checks, "supporting_evidence_open_by_default": True,
+                  "matching_part4_panel_title_sizes": True, "subsection_middle_main_part_right": True,
                   "viewports": viewport_checks, "direct_file_opening_checked": bool(offline_ok),
                   "direct_file_opening_method": "byte-identical temporary copy, compatible with Firefox Snap confinement",
                   "pdf_exported": export_pdf}

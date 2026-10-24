@@ -79,7 +79,12 @@ changeCase();
 
 function revealEvidence() {
   const target = document.getElementById(location.hash.slice(1));
-  if (target && target.matches('details.extension-details')) target.open = true;
+  if (!target) return;
+  let opened = false;
+  for (let node = target; node; node = node.parentElement) {
+    if (node.tagName === 'DETAILS' && !node.open) { node.open = true; opened = true; }
+  }
+  if (opened) requestAnimationFrame(() => target.scrollIntoView({ behavior: 'instant' }));
 }
 window.addEventListener('hashchange', revealEvidence);
 revealEvidence();
@@ -89,6 +94,8 @@ revealEvidence();
 const readingBar = document.getElementById('reading-position');
 const readingCurrent = document.getElementById('reading-current');
 const readingCaption = document.getElementById('reading-caption');
+const readingSubphase = document.getElementById('reading-subphase');
+const subsectionLinks = [...document.querySelectorAll('.jump-subsections a')];
 const readingSections = [...document.querySelectorAll('[data-reading-title]')];
 const readingLinks = [...document.querySelectorAll('.reading-steps a, .report-quick-links a')];
 readingBar.hidden = false;
@@ -99,14 +106,22 @@ function updateReadingPosition() {
   const offset = readingBar.getBoundingClientRect().height + 26;
   let current = readingSections[0];
   for (const section of readingSections) {
+    if (!section.getClientRects().length) continue;
     if (section.getBoundingClientRect().top <= offset) current = section;
     else break;
   }
   const part = current.dataset.readingPart;
   const context = current.dataset.readingContext;
-  readingCaption.textContent = part ? `PART ${part} OF 5${context ? ' · ' + context : ''}` : (current.id === 'reproduce' ? 'SUPPORTING FILES' : 'OVERVIEW');
+  readingCaption.textContent = part ? `PART ${part} OF 5` : (current.id === 'reproduce' ? 'SUPPORTING FILES' : 'OVERVIEW');
   readingCurrent.textContent = current.dataset.readingTitle;
-  readingCurrent.setAttribute('href', '#' + current.id);
+  const mainPart = part ? readingSections.find(section => section.dataset.readingPart === part) : current;
+  readingCurrent.setAttribute('href', '#' + mainPart.id);
+  readingSubphase.textContent = context || current.dataset.readingTitle;
+  readingSubphase.setAttribute('href', '#' + current.id);
+  for (const link of subsectionLinks) {
+    if (link.hash === '#' + current.id) link.setAttribute('aria-current', 'location');
+    else link.removeAttribute('aria-current');
+  }
   for (const link of readingLinks) {
     const target = document.getElementById(link.hash.slice(1));
     if (part && target.dataset.readingPart === part) link.setAttribute('aria-current', 'location');

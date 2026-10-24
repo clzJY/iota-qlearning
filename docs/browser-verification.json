@@ -72,6 +72,51 @@
     }
   ],
   "quick_link_updates_position": true,
+  "direct_subsection_links": [
+    {
+      "target": "implementation-choices",
+      "opens_and_tracks": true
+    },
+    {
+      "target": "original-tables",
+      "opens_and_tracks": true
+    },
+    {
+      "target": "original-convergence",
+      "opens_and_tracks": true
+    },
+    {
+      "target": "modified-tables",
+      "opens_and_tracks": true
+    },
+    {
+      "target": "modified-convergence",
+      "opens_and_tracks": true
+    },
+    {
+      "target": "reference-calculation",
+      "opens_and_tracks": true
+    },
+    {
+      "target": "saved-qtables",
+      "opens_and_tracks": true
+    },
+    {
+      "target": "equal-routes-evidence",
+      "opens_and_tracks": true
+    },
+    {
+      "target": "insight",
+      "opens_and_tracks": true
+    },
+    {
+      "target": "pilot-settings",
+      "opens_and_tracks": true
+    }
+  ],
+  "supporting_evidence_open_by_default": true,
+  "matching_part4_panel_title_sizes": true,
+  "subsection_middle_main_part_right": true,
   "viewports": [
     {
       "width": 390,
@@ -79,7 +124,9 @@
       "horizontal_overflow": false,
       "quick_links_one_row": true,
       "quick_links_scrollable": true,
-      "five_reading_positions_checked": true
+      "five_reading_positions_checked": true,
+      "subsection_middle_main_part_right": true,
+      "part4_title_sizes_match": true
     },
     {
       "width": 768,
@@ -87,7 +134,9 @@
       "horizontal_overflow": false,
       "quick_links_one_row": true,
       "quick_links_scrollable": false,
-      "five_reading_positions_checked": true
+      "five_reading_positions_checked": true,
+      "subsection_middle_main_part_right": true,
+      "part4_title_sizes_match": true
     },
     {
       "width": 1440,
@@ -95,7 +144,9 @@
       "horizontal_overflow": false,
       "quick_links_one_row": true,
       "quick_links_scrollable": false,
-      "five_reading_positions_checked": true
+      "five_reading_positions_checked": true,
+      "subsection_middle_main_part_right": true,
+      "part4_title_sizes_match": true
     }
   ],
   "direct_file_opening_checked": true,
