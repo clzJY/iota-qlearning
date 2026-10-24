@@ -190,7 +190,7 @@ def main():
         conceptual = ""
         if case == "modified":
             conceptual = '<figure class="experiment-illustration route-illustration">' + route_scene(config["graph"], "modified") + '<figcaption><strong>Experiment 2 · the same map, from A to C.</strong> The robot stays in A and the destination in C. Teal shows A → E → D → C (3 moves); orange goes via F and B (4 moves); blue goes via D and B (4 moves). Moving shadows fade as they reach C. These are illustrative legal alternatives, not recorded training trajectories. The learned seed-0 route is reported below.</figcaption></figure>'
-        required.append(f'''<article class="case {case}" id="case-{case}"><div class="case-header"><div><span class="case-tag">EXPERIMENT {number}</span><h3>{question}</h3></div></div>
+        required.append(f'''<article class="case {case}" id="case-{case}" data-reading-part="3" data-reading-title="Results for both configurations" data-reading-context="Experiment {number} · {e['start']} → {e['goal']}"><div class="case-header"><div><span class="case-tag">EXPERIMENT {number}</span><h3>{question}</h3></div></div>
 {conceptual}
 <p class="evidence-intro">{before_tables} These are the saved initial and final tables from seed 0.</p>
 <div class="q-tables">{tables}</div><p class="table-reading">{table_example}</p>

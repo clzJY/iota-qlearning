@@ -17,21 +17,85 @@
   "five_required_report_parts_linked": true,
   "extension_answers_visible": true,
   "ai_use_before_report_files": true,
+  "five_named_report_parts": true,
+  "single_row_quick_links": true,
+  "sticky_reading_position": [
+    {
+      "target": "method",
+      "part": "1",
+      "checked": true
+    },
+    {
+      "target": "setup",
+      "part": "2",
+      "checked": true
+    },
+    {
+      "target": "results",
+      "part": "3",
+      "checked": true
+    },
+    {
+      "target": "case-original",
+      "part": "3",
+      "checked": true
+    },
+    {
+      "target": "case-modified",
+      "part": "3",
+      "checked": true
+    },
+    {
+      "target": "required-comparison",
+      "part": "4",
+      "checked": true
+    },
+    {
+      "target": "comparison",
+      "part": "4",
+      "checked": true
+    },
+    {
+      "target": "takeaways",
+      "part": "5",
+      "checked": true
+    },
+    {
+      "target": "references",
+      "part": "5",
+      "checked": true
+    },
+    {
+      "target": "ai-use",
+      "part": "5",
+      "checked": true
+    }
+  ],
+  "quick_link_updates_position": true,
   "viewports": [
     {
       "width": 390,
       "actual_inner_width": 390,
-      "horizontal_overflow": false
+      "horizontal_overflow": false,
+      "quick_links_one_row": true,
+      "quick_links_scrollable": true,
+      "five_reading_positions_checked": true
     },
     {
       "width": 768,
       "actual_inner_width": 768,
-      "horizontal_overflow": false
+      "horizontal_overflow": false,
+      "quick_links_one_row": true,
+      "quick_links_scrollable": false,
+      "five_reading_positions_checked": true
     },
     {
       "width": 1440,
       "actual_inner_width": 1440,
-      "horizontal_overflow": false
+      "horizontal_overflow": false,
+      "quick_links_one_row": true,
+      "quick_links_scrollable": false,
+      "five_reading_positions_checked": true
     }
   ],
   "direct_file_opening_checked": true,

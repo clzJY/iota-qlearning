@@ -83,3 +83,47 @@ function revealEvidence() {
 }
 window.addEventListener('hashchange', revealEvidence);
 revealEvidence();
+
+// Track the section at the top of the reading area, including deep links and
+// changing heights when optional evidence is opened. Native links work without JS.
+const readingBar = document.getElementById('reading-position');
+const readingCurrent = document.getElementById('reading-current');
+const readingCaption = document.getElementById('reading-caption');
+const readingSections = [...document.querySelectorAll('[data-reading-title]')];
+const readingLinks = [...document.querySelectorAll('.reading-steps a, .report-quick-links a')];
+readingBar.hidden = false;
+let readingFrame = null;
+function updateReadingPosition() {
+  readingFrame = null;
+  // Allow two pixels for fractional anchor-position rounding.
+  const offset = readingBar.getBoundingClientRect().height + 26;
+  let current = readingSections[0];
+  for (const section of readingSections) {
+    if (section.getBoundingClientRect().top <= offset) current = section;
+    else break;
+  }
+  const part = current.dataset.readingPart;
+  const context = current.dataset.readingContext;
+  readingCaption.textContent = part ? `PART ${part} OF 5${context ? ' · ' + context : ''}` : (current.id === 'reproduce' ? 'SUPPORTING FILES' : 'OVERVIEW');
+  readingCurrent.textContent = current.dataset.readingTitle;
+  readingCurrent.setAttribute('href', '#' + current.id);
+  for (const link of readingLinks) {
+    const target = document.getElementById(link.hash.slice(1));
+    if (part && target.dataset.readingPart === part) link.setAttribute('aria-current', 'location');
+    else link.removeAttribute('aria-current');
+  }
+}
+function scheduleReadingPosition() {
+  if (readingFrame === null) readingFrame = requestAnimationFrame(updateReadingPosition);
+}
+window.addEventListener('scroll', scheduleReadingPosition, { passive: true });
+window.addEventListener('resize', scheduleReadingPosition);
+window.addEventListener('hashchange', scheduleReadingPosition);
+document.addEventListener('toggle', scheduleReadingPosition, true);
+const readingResize = new ResizeObserver(() => {
+  document.documentElement.style.setProperty('--reading-offset', `${readingBar.getBoundingClientRect().height + 24}px`);
+  scheduleReadingPosition();
+});
+readingResize.observe(readingBar);
+readingResize.observe(document.getElementById('main'));
+updateReadingPosition();

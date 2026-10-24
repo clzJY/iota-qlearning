@@ -100,6 +100,22 @@ def main(export_pdf=False):
         assert ai_target == "#ai-use", ai_target
         assert script("const links=[...document.querySelectorAll('nav[aria-label=\"Report sections\"] a')];return links.findIndex(a=>a.hash==='#ai-use')<links.findIndex(a=>a.hash==='#reproduce')"), "AI use must precede Report & files"
         assert script("return document.querySelectorAll('#report-guide .requirement-link').length===5 && [...document.querySelectorAll('#report-guide a')].every(a=>document.getElementById(a.hash.slice(1)))"), "Every report requirement needs a valid direct link"
+        assert script("const ids=['method','setup','results','required-comparison','takeaways'];const titles=['Motivation and method','Environment and experimental setup','Results for both configurations','Comparison and critical analysis','Takeaways and references'];return ids.every((id,i)=>document.querySelector('#'+id+' h2').textContent===titles[i]) && document.getElementById('takeaways').contains(document.getElementById('references')) && document.getElementById('takeaways').contains(document.getElementById('ai-use'))"), "Five main headings and their contents must match the brief"
+        assert script("return !document.querySelector('.requirement-cards') && document.getElementById('report-guide').parentElement.id==='question' && document.querySelectorAll('#report-guide a').length===5"), "Use five simple quick links at the bottom of The Problem"
+        reading_checks = []
+        for target,part in [("method","1"),("setup","2"),("results","3"),("case-original","3"),("case-modified","3"),("required-comparison","4"),("comparison","4"),("takeaways","5"),("references","5"),("ai-use","5")]:
+            script(f"document.getElementById({json.dumps(target)}).scrollIntoView({{behavior:'instant'}})")
+            command("POST", "/execute/async", {"script": "const done=arguments[arguments.length-1];requestAnimationFrame(()=>requestAnimationFrame(()=>requestAnimationFrame(()=>done(true))))", "args": []})
+            state = script("return {caption:document.getElementById('reading-caption').textContent,title:document.getElementById('reading-current').textContent,active:[...document.querySelectorAll('.reading-steps a[aria-current]')].map(a=>a.textContent),top:document.getElementById('reading-position').getBoundingClientRect().top}")
+            assert state["active"] == [part], (target,state)
+            assert state["caption"].startswith(f"PART {part} OF 5"), (target,state)
+            assert abs(state["top"]) < 1, (target,state)
+            if target == "case-modified": assert "Experiment 2" in state["caption"]
+            reading_checks.append({"target":target,"part":part,"checked":True})
+        script("document.getElementById('report-guide').scrollIntoView({behavior:'instant'});document.documentElement.style.scrollBehavior='auto'")
+        quick_target = command("POST", "/execute/async", {"script": "const done=arguments[arguments.length-1];window.addEventListener('hashchange',()=>requestAnimationFrame(()=>requestAnimationFrame(()=>done({hash:location.hash,part:document.getElementById('reading-caption').textContent}))),{once:true});document.querySelector('#report-guide a[href=\"#setup\"]').click()", "args": []})
+        assert quick_target["hash"] == "#setup" and quick_target["part"].startswith("PART 2 OF 5"), quick_target
+        script("document.documentElement.style.scrollBehavior=''")
         assert script("return document.querySelectorAll('.extension-answers article').length===2 && !document.querySelector('.extension-answers').closest('details') && document.getElementById('equal-routes-conclusion').textContent.includes('No,') && document.getElementById('route-accuracy-conclusion').textContent.includes('Yes.')"), "Both additional questions need explicit visible answers"
         assert script("const scene=document.getElementById('modified-route-scene');return scene.closest('#case-modified') && scene.querySelectorAll('.route-track').length===3 && document.getElementById('modified-fixed-robot').dataset.room==='A' && document.getElementById('modified-fixed-destination').dataset.room==='C'"), "Experiment 2 needs the A-to-C figure"
         modified_motion = script("const svg=document.getElementById('modified-route-scene');const robot=document.getElementById('modified-fixed-robot');const dock=document.getElementById('modified-fixed-destination');const echo=svg.querySelector('.route-echo');function position(element){const r=element.getBoundingClientRect();return [r.x,r.y,r.width,r.height]}const before=[position(robot),position(dock)];svg.pauseAnimations();svg.setCurrentTime(1);const first=[echo.getCTM().e,echo.getCTM().f,Number(getComputedStyle(echo).opacity)];svg.setCurrentTime(7.9);const last=[echo.getCTM().e,echo.getCTM().f,Number(getComputedStyle(echo).opacity)];const after=[position(robot),position(dock)];svg.unpauseAnimations();return {before,after,first,last}")
@@ -141,7 +157,7 @@ def main(export_pdf=False):
             offline_report = Path(temporary) / "report"
             shutil.copytree(ROOT / "report", offline_report)
             command("POST", "/url", {"url": (offline_report / "index.html").as_uri()})
-            offline_ok = script("return document.title.includes('Q-learning') && document.getElementById('worked-example').textContent.includes('0.009') && document.querySelectorAll('.route-scene').length===2 && document.querySelectorAll('#modified-route-scene .route-track').length===3 && document.querySelectorAll('#report-guide .requirement-link').length===5 && [...document.images].every(i=>i.complete && i.naturalWidth>0)")
+            offline_ok = script("return document.title.includes('Q-learning') && document.getElementById('worked-example').textContent.includes('0.009') && document.querySelectorAll('.route-scene').length===2 && document.querySelectorAll('#modified-route-scene .route-track').length===3 && document.querySelectorAll('#report-guide .requirement-link').length===5 && !document.getElementById('reading-position').hidden && [...document.images].every(i=>i.complete && i.naturalWidth>0)")
             assert offline_ok, "Direct file opening failed"
         if export_pdf:
             command("POST", "/url", {"url": local_url})
@@ -169,6 +185,8 @@ def main(export_pdf=False):
                   "modified_a_to_c_figure_checked": True, "both_figure_controls_independent": True,
                   "five_required_report_parts_linked": True, "extension_answers_visible": True,
                   "ai_use_before_report_files": True,
+                  "five_named_report_parts": True, "single_row_quick_links": True,
+                  "sticky_reading_position": reading_checks, "quick_link_updates_position": True,
                   "viewports": viewport_checks, "direct_file_opening_checked": bool(offline_ok),
                   "direct_file_opening_method": "byte-identical temporary copy, compatible with Firefox Snap confinement",
                   "pdf_exported": export_pdf}

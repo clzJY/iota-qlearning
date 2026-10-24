@@ -119,9 +119,10 @@ destination in C. Teal shows A → E → D → C (3 moves), orange A → E → F
 alternatives; the reported learned policy still comes from the saved evaluation.
 Each figure has its own pause control.
 
-The five cards under the problem section use the report-part titles from the
-assignment. They link to the method, setup, both results, comparison, and
-takeaways/references/AI statement. The two Going Further questions are additional
+The five quick links at the bottom of The Problem jump to the five named report
+parts. They stay in one row and scroll horizontally on narrow screens. The sticky
+reading indicator follows the current part, including which experiment is being
+read. References and the AI statement are grouped with Part 5. The two Going Further questions are additional
 investigations. Their visible answers are: equal route lengths do not imply equal
 whole-table learning times in this protocol; and a good route can coexist with
 inaccurate unvisited actions (14/20 shortest without exploration, 0/20 accurate

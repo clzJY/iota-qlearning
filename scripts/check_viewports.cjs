@@ -45,7 +45,26 @@ async function main() {
     await frame();
     const dimensions = await script('return {inner:window.innerWidth,viewport:document.documentElement.clientWidth,content:document.documentElement.scrollWidth}');
     if (dimensions.inner !== width || dimensions.content > dimensions.viewport + 1) throw new Error(JSON.stringify(dimensions));
-    results.push({ width, actual_inner_width: dimensions.inner, horizontal_overflow: false });
+    await script("document.getElementById('report-guide').scrollIntoView({behavior:'instant'})");
+    await frame();
+    const quickLinks = await script("const row=document.querySelector('.report-quick-links');const links=[...row.querySelectorAll('a')];return {tops:links.map(a=>a.getBoundingClientRect().top),scrollable:row.scrollWidth>row.clientWidth+1}");
+    if (Math.max(...quickLinks.tops)-Math.min(...quickLinks.tops)>1) throw new Error('Quick links must stay in one row');
+    if (width===390 && !quickLinks.scrollable) throw new Error('Mobile quick-link row must scroll');
+    for (const [target, part] of [['method','1'],['setup','2'],['results','3'],['required-comparison','4'],['takeaways','5']]) {
+      await script(`document.getElementById(${JSON.stringify(target)}).scrollIntoView({behavior:'instant'})`);
+      await frame();
+      const active = await script("return [...document.querySelectorAll('.reading-steps a[aria-current]')].map(a=>a.textContent).join('')");
+      if (active!==part) throw new Error(`Reading indicator at ${width}px: ${target} expected ${part}, got ${active}`);
+    }
+    await script("document.getElementById('report-guide').scrollIntoView({behavior:'instant'})");
+    await frame();
+    results.push({ width, actual_inner_width: dimensions.inner, horizontal_overflow: false, quick_links_one_row: true, quick_links_scrollable: quickLinks.scrollable, five_reading_positions_checked: true });
+    if (width === 390) {
+      const shot = await command('GET', '/screenshot');
+      fs.writeFileSync(path.join(options.previewDirectory, 'report-guide-mobile.png'), Buffer.from(shot, 'base64'));
+    }
+    await script("window.scrollTo({top:0,behavior:'instant'})");
+    await frame();
     if (width === 390) {
       let screenshot = await command('GET', '/screenshot');
       fs.writeFileSync(path.join(options.previewDirectory, 'mobile.png'), Buffer.from(screenshot, 'base64'));

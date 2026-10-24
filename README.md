@@ -33,8 +33,9 @@ from the report for printing; it is a companion rather than a separate narrative
 Edit the template, then run `python scripts/build_report.py`. Direct edits to the
 built `report/index.html` would be replaced by the next generation. Both conceptual floorplans use the same corrected walls and doorways: the opening
 shows C → F and Experiment 2 shows A → C. Each has fixed robot/dock markers and
-three illustrative legal route traces. Traces are not recorded runs. The five-part
-report guide links directly to the sections required by the assignment; conclusions
+three illustrative legal route traces. Traces are not recorded runs. A single row of five quick links at the bottom of The Problem jumps to the named
+report parts. A sticky reading indicator shows the current part and experiment
+while scrolling. References and AI use appear with the Part 5 takeaways; conclusions
 for both additional questions remain visible before their expandable evidence.
 The required C-to-F and A-to-C experiments come before the expandable extensions.
 
