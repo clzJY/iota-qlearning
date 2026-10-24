@@ -86,3 +86,28 @@
 @media print{.route-track{animation:none;stroke-dashoffset:0;opacity:.85}.route-echo,.route-motion-button{display:none}.route-illustration{padding:10px 5px}.route-legend{font-size:6pt}.floor-room-label{font-size:31px}.worked-example{padding:16px;margin-top:22px;break-inside:avoid}.worked-example>p{font-size:9pt}.update-steps{gap:18px;grid-template-columns:1fr 1fr}.update-steps p{font-size:8pt}.update-label{font-size:10pt}.update-equation{font-size:7pt}.ai-statement p{font-size:8pt}}
 .floor-marker-label{font-size:18px}
 @media(max-width:700px){.floor-room-label{font-size:36px}.floor-marker-label{font-size:24px}}
+
+/* Report guide and explicit answers support readers checking the brief. */
+.report-guide{margin-top:42px;padding-top:30px;border-top:1px solid var(--line)}
+.report-guide>h3{font-family:var(--serif);font-weight:400;font-size:27px}
+.report-guide>p{font-size:14px;color:var(--muted)}
+.requirement-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.requirement-cards article{padding:20px;background:var(--white);border:1px solid var(--line);border-radius:4px}
+.requirement-link{display:flex;gap:12px;align-items:baseline;text-decoration:none;line-height:1.5}
+.requirement-link span{font:11px var(--mono);color:var(--muted)}
+.requirement-link strong{font-size:15px}
+.requirement-cards article>p{font-size:13px;line-height:1.75;color:var(--muted);margin:12px 0}
+.requirement-detail{font-size:12px}
+.experiment-illustration{max-width:880px;margin:24px auto 30px;padding:20px 18px 14px;break-inside:avoid}
+.experiment-illustration figcaption{font-size:13px;line-height:1.85;padding:12px 10px 0;color:var(--muted)}
+.experiment-illustration figcaption strong{color:var(--ink)}
+.experiment-illustration .route-legend{font-size:12px}
+.extension-answers{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:30px}
+.extension-answers article{background:var(--white);border:1px solid var(--line);border-top:3px solid var(--teal);padding:27px;border-radius:3px}
+.extension-answers h3{font-family:var(--serif);font-size:26px;font-weight:400;line-height:1.4}
+.extension-answers article>p{font-size:15px;line-height:1.85}
+.extension-answers article>.eyebrow{font-size:9px;color:var(--teal)}
+.extension-answers article>a{font-size:13px}
+@media(max-width:980px){.requirement-cards{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.requirement-cards,.extension-answers{grid-template-columns:1fr}.report-guide{margin-top:30px}.report-guide>h3{font-size:24px}.requirement-cards article{padding:18px}.experiment-illustration{padding:12px 4px 10px}.experiment-illustration figcaption{font-size:11px;padding:10px}.experiment-illustration .route-legend{font-size:10px}.extension-answers article{padding:22px}.extension-answers h3{font-size:24px}.extension-answers article>p{font-size:14px}}
+@media print{.report-guide{margin-top:22px;padding-top:16px}.report-guide>h3{font-size:14pt}.report-guide>p{font-size:8pt}.requirement-cards{grid-template-columns:1fr 1fr 1fr;gap:9px}.requirement-cards article{padding:10px;break-inside:avoid}.requirement-link{gap:6px}.requirement-link strong{font-size:8pt}.requirement-link span{font-size:6pt}.requirement-cards article>p{font-size:7pt;margin:7px 0}.requirement-detail{font-size:7pt}.experiment-illustration{max-width:145mm;margin:15px auto;padding:8px}.experiment-illustration figcaption{font-size:7pt}.experiment-illustration .route-legend{font-size:7pt}.extension-answers{gap:15px}.extension-answers article{padding:15px;break-inside:avoid}.extension-answers h3{font-size:14pt}.extension-answers article>p{font-size:9pt}.extension-answers article>a{font-size:8pt}}

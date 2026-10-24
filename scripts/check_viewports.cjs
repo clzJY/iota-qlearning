@@ -53,6 +53,10 @@ async function main() {
       await frame();
       screenshot = await command('GET', '/screenshot');
       fs.writeFileSync(path.join(options.previewDirectory, 'results-mobile.png'), Buffer.from(screenshot, 'base64'));
+      await script("document.getElementById('case-modified').scrollIntoView({behavior:'instant'})");
+      await frame();
+      screenshot = await command('GET', '/screenshot');
+      fs.writeFileSync(path.join(options.previewDirectory, 'experiment2-mobile.png'), Buffer.from(screenshot, 'base64'));
     }
   }
   await bidi('browsingContext.setViewport', { context, viewport: null });

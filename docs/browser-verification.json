@@ -12,6 +12,11 @@
   "three_route_echoes_move_and_fade": true,
   "route_pause_button_checked": true,
   "ai_use_menu_checked": true,
+  "modified_a_to_c_figure_checked": true,
+  "both_figure_controls_independent": true,
+  "five_required_report_parts_linked": true,
+  "extension_answers_visible": true,
+  "ai_use_before_report_files": true,
   "viewports": [
     {
       "width": 390,

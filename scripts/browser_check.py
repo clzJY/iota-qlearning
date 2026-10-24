@@ -96,8 +96,22 @@ def main(export_pdf=False):
         assert script("return document.getElementById('route-scene').animationsPaused()")
         script("document.getElementById('route-motion').click()")
         assert not script("return document.getElementById('route-scene').animationsPaused()")
-        ai_target = command("POST", "/execute/async", {"script": "const done=arguments[arguments.length-1];window.addEventListener('hashchange',()=>done(location.hash),{once:true});document.querySelector('nav a:last-child').click()", "args": []})
+        ai_target = command("POST", "/execute/async", {"script": "const done=arguments[arguments.length-1];window.addEventListener('hashchange',()=>done(location.hash),{once:true});document.querySelector('nav a[href=\"#ai-use\"]').click()", "args": []})
         assert ai_target == "#ai-use", ai_target
+        assert script("const links=[...document.querySelectorAll('nav[aria-label=\"Report sections\"] a')];return links.findIndex(a=>a.hash==='#ai-use')<links.findIndex(a=>a.hash==='#reproduce')"), "AI use must precede Report & files"
+        assert script("return document.querySelectorAll('#report-guide .requirement-link').length===5 && [...document.querySelectorAll('#report-guide a')].every(a=>document.getElementById(a.hash.slice(1)))"), "Every report requirement needs a valid direct link"
+        assert script("return document.querySelectorAll('.extension-answers article').length===2 && !document.querySelector('.extension-answers').closest('details') && document.getElementById('equal-routes-conclusion').textContent.includes('No,') && document.getElementById('route-accuracy-conclusion').textContent.includes('Yes.')"), "Both additional questions need explicit visible answers"
+        assert script("const scene=document.getElementById('modified-route-scene');return scene.closest('#case-modified') && scene.querySelectorAll('.route-track').length===3 && document.getElementById('modified-fixed-robot').dataset.room==='A' && document.getElementById('modified-fixed-destination').dataset.room==='C'"), "Experiment 2 needs the A-to-C figure"
+        modified_motion = script("const svg=document.getElementById('modified-route-scene');const robot=document.getElementById('modified-fixed-robot');const dock=document.getElementById('modified-fixed-destination');const echo=svg.querySelector('.route-echo');function position(element){const r=element.getBoundingClientRect();return [r.x,r.y,r.width,r.height]}const before=[position(robot),position(dock)];svg.pauseAnimations();svg.setCurrentTime(1);const first=[echo.getCTM().e,echo.getCTM().f,Number(getComputedStyle(echo).opacity)];svg.setCurrentTime(7.9);const last=[echo.getCTM().e,echo.getCTM().f,Number(getComputedStyle(echo).opacity)];const after=[position(robot),position(dock)];svg.unpauseAnimations();return {before,after,first,last}")
+        assert modified_motion["before"] == modified_motion["after"]
+        assert modified_motion["first"][:2] != modified_motion["last"][:2]
+        assert modified_motion["last"][2] < modified_motion["first"][2] / 10
+        script("document.getElementById('modified-route-motion').click()")
+        assert script("return document.getElementById('modified-route-scene').animationsPaused() && !document.getElementById('route-scene').animationsPaused()"), "Figure controls must be independent"
+        script("document.getElementById('modified-route-motion').click()")
+        assert not script("return document.getElementById('modified-route-scene').animationsPaused()")
+        evidence_target = command("POST", "/execute/async", {"script": "const done=arguments[arguments.length-1];window.addEventListener('hashchange',()=>done(document.getElementById('equal-routes-evidence').open),{once:true});document.querySelector('#equal-routes-conclusion>a').click()", "args": []})
+        assert evidence_target, "Evidence link must open the correct panel"
         result = script("document.querySelector('.snapshot-details').open=true; document.getElementById('snapshot-case').value='modified'; document.getElementById('snapshot-case').dispatchEvent(new Event('change')); document.getElementById('snapshot-episode').value='20000'; document.getElementById('snapshot-episode').dispatchEvent(new Event('change')); return document.querySelector('#snapshot-table caption').textContent")
         assert "A → C" in result and "20000" in result
         assert script("return document.querySelectorAll('#snapshot-table tbody tr').length") == 6
@@ -105,6 +119,10 @@ def main(export_pdf=False):
         screenshot("desktop.png")
         script("document.getElementById('case-original').scrollIntoView({behavior:'instant'})")
         screenshot("results-desktop.png")
+        script("document.getElementById('case-modified').scrollIntoView({behavior:'instant'})")
+        screenshot("experiment2-desktop.png")
+        script("document.getElementById('report-guide').scrollIntoView({behavior:'instant'})")
+        screenshot("report-guide-desktop.png")
         # Native window resize has a minimum width in Firefox. BiDi overrides the
         # actual CSS viewport, so a requested 390px test really tests 390px.
         viewport_input = {"webSocketUrl": session["capabilities"]["webSocketUrl"],
@@ -123,7 +141,7 @@ def main(export_pdf=False):
             offline_report = Path(temporary) / "report"
             shutil.copytree(ROOT / "report", offline_report)
             command("POST", "/url", {"url": (offline_report / "index.html").as_uri()})
-            offline_ok = script("return document.title.includes('Q-learning') && document.getElementById('worked-example').textContent.includes('0.009') && document.querySelectorAll('#route-scene .route-track').length===3 && [...document.images].every(i=>i.complete && i.naturalWidth>0)")
+            offline_ok = script("return document.title.includes('Q-learning') && document.getElementById('worked-example').textContent.includes('0.009') && document.querySelectorAll('.route-scene').length===2 && document.querySelectorAll('#modified-route-scene .route-track').length===3 && document.querySelectorAll('#report-guide .requirement-link').length===5 && [...document.images].every(i=>i.complete && i.naturalWidth>0)")
             assert offline_ok, "Direct file opening failed"
         if export_pdf:
             command("POST", "/url", {"url": local_url})
@@ -148,6 +166,9 @@ def main(export_pdf=False):
                   "annotated_reward_propagation_without_sliders": True, "saved_snapshot_control_checked": True,
                   "fixed_robot_and_destination_checked": True, "three_route_echoes_move_and_fade": True,
                   "route_pause_button_checked": True, "ai_use_menu_checked": True,
+                  "modified_a_to_c_figure_checked": True, "both_figure_controls_independent": True,
+                  "five_required_report_parts_linked": True, "extension_answers_visible": True,
+                  "ai_use_before_report_files": True,
                   "viewports": viewport_checks, "direct_file_opening_checked": bool(offline_ok),
                   "direct_file_opening_method": "byte-identical temporary copy, compatible with Firefox Snap confinement",
                   "pdf_exported": export_pdf}

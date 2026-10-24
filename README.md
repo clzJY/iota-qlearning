@@ -31,9 +31,11 @@ from the report for printing; it is a companion rather than a separate narrative
 | Understand the learning implementation | `code/qlearning.py` |
 
 Edit the template, then run `python scripts/build_report.py`. Direct edits to the
-built `report/index.html` would be replaced by the next generation. The opening
-floorplan uses the same corrected graph as the experiments, with fixed robot/dock
-markers and three illustrative legal route traces. Traces are not recorded runs.
+built `report/index.html` would be replaced by the next generation. Both conceptual floorplans use the same corrected walls and doorways: the opening
+shows C → F and Experiment 2 shows A → C. Each has fixed robot/dock markers and
+three illustrative legal route traces. Traces are not recorded runs. The five-part
+report guide links directly to the sections required by the assignment; conclusions
+for both additional questions remain visible before their expandable evidence.
 The required C-to-F and A-to-C experiments come before the expandable extensions.
 
 ## Read the report
@@ -76,7 +78,7 @@ shortest route and six kept a longer one. The report analyses why these are diff
 ## Map correction and preserved history
 
 The B–C connection is available in both directions: C has actions B/D; B has
-C/D/F when it is nonterminal. Both diagrams, every current main/pilot experiment,
+C/D/F when it is nonterminal. All diagrams, every current main/pilot experiment,
 and all derived values use these seven doorway pairs:
 A–E, B–C, B–D, B–F, C–D, D–E, E–F.
 

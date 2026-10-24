@@ -1,22 +1,24 @@
 'use strict';
 
 // The solid robot and dock stay fixed. Only translucent route echoes move.
-const scene = document.getElementById('route-scene');
-const motionButton = document.getElementById('route-motion');
 const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
-function setRoutePaused(paused) {
-  if (paused) scene.pauseAnimations(); else scene.unpauseAnimations();
-  scene.closest('figure').classList.toggle('routes-paused', paused);
-  motionButton.textContent = paused ? 'Play routes' : 'Pause routes';
-  motionButton.setAttribute('aria-pressed', String(paused));
+for (const scene of document.querySelectorAll('.route-scene')) {
+  const figure = scene.closest('figure');
+  const motionButton = figure.querySelector('.route-motion-button');
+  function setRoutePaused(paused) {
+    if (paused) scene.pauseAnimations(); else scene.unpauseAnimations();
+    figure.classList.toggle('routes-paused', paused);
+    motionButton.textContent = paused ? 'Play routes' : 'Pause routes';
+    motionButton.setAttribute('aria-pressed', String(paused));
+  }
+  function applyMotionPreference() {
+    setRoutePaused(motionPreference.matches);
+    motionButton.hidden = motionPreference.matches;
+  }
+  motionButton.addEventListener('click', () => setRoutePaused(!scene.animationsPaused()));
+  motionPreference.addEventListener('change', applyMotionPreference);
+  applyMotionPreference();
 }
-function applyMotionPreference() {
-  setRoutePaused(motionPreference.matches);
-  motionButton.hidden = motionPreference.matches;
-}
-motionButton.addEventListener('click', () => setRoutePaused(!scene.animationsPaused()));
-motionPreference.addEventListener('change', applyMotionPreference);
-applyMotionPreference();
 
 // Values below are saved experimental checkpoints, not a live training run.
 const saved = JSON.parse(document.getElementById('experiment-data').textContent);
@@ -74,3 +76,10 @@ function changeCase() {
 caseSelect.addEventListener('change', changeCase);
 episodeSelect.addEventListener('change', drawSnapshot);
 changeCase();
+
+function revealEvidence() {
+  const target = document.getElementById(location.hash.slice(1));
+  if (target && target.matches('details.extension-details')) target.open = true;
+}
+window.addEventListener('hashchange', revealEvidence);
+revealEvidence();

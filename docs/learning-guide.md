@@ -109,3 +109,20 @@ orange C → D → B → F, and blue C → D → E → F. Faint robot echoes sho
 choices and fade as they reach F. The animation uses valid doorways, but it is not
 a playback of a recorded training trajectory. The reported policies and plots below
 it come from the saved experiments.
+
+
+## Experiment 2 and the report guide
+
+Experiment 2 reuses the exact room geometry, with the static robot in A and the
+destination in C. Teal shows A → E → D → C (3 moves), orange A → E → F → B → C
+(4 moves), and blue A → E → D → B → C (4 moves). These are legal conceptual
+alternatives; the reported learned policy still comes from the saved evaluation.
+Each figure has its own pause control.
+
+The five cards under the problem section use the report-part titles from the
+assignment. They link to the method, setup, both results, comparison, and
+takeaways/references/AI statement. The two Going Further questions are additional
+investigations. Their visible answers are: equal route lengths do not imply equal
+whole-table learning times in this protocol; and a good route can coexist with
+inaccurate unvisited actions (14/20 shortest without exploration, 0/20 accurate
+tables). Expand the corresponding evidence for seed summaries and plots.

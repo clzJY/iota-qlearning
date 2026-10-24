@@ -1,6 +1,6 @@
 {
   "saved_runs_verified": 120,
   "aggregate_series_verified": 108,
-  "required_seed_0_full_replay": true,
+  "required_seed_0_full_replay": false,
   "offline_local_references_checked": true
 }
